@@ -15,10 +15,16 @@ class Gaji extends Model
         'tunjangan',
         'potongan',
         'total_gaji',
+        'keterangan',
     ];
 
     public function pegawai()
     {
         return $this->belongsTo(Pegawai::class, 'pegawai_id');
+    }
+
+    public function potongan()
+    {
+        return $this->belongsTo(PotonganKeterlambatan::class, 'potongan_id');
     }
 }

@@ -17,4 +17,14 @@ class Pegawai extends Model
         'alamat',
         'telepon',
     ];
+
+    public function potongans()
+    {
+        return $this->hasMany(PotonganKeterlambatan::class, 'pegawai_id');
+    }
+
+    public function gajis()
+    {
+        return $this->hasMany(Gaji::class, 'pegawai_id');
+    }
 }

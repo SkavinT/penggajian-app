@@ -21,7 +21,8 @@
                     <th>Tunjangan</th>
                     <th>Potongan</th>
                     <th>Total Gaji</th>
-                    <th>Aksi</th>
+                    <th>Keterangan</th>
+                    <th>Edit</th>
                 </tr>
             </thead>
             <tbody>
@@ -33,6 +34,7 @@
                     <td>{{ number_format($gaji->tunjangan ?? 0, 0, ',', '.') }}</td>
                     <td>{{ number_format($gaji->potongan ?? 0, 0, ',', '.') }}</td>
                     <td>{{ number_format($gaji->total_gaji, 0, ',', '.') }}</td>
+                    <td>{{ $gaji->keterangan ?? '-' }}</td>
                     <td>
                         <a href="{{ route('gaji.edit', $gaji->id) }}" class="btn btn-warning btn-sm">Edit</a>
                         {{-- <a href="{{ route('gaji.update', $gaji->id) }}" class="btn btn-success btn-sm">Update</a> --}}

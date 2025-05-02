@@ -12,13 +12,13 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('gajis', function (Blueprint $table) {
-            $table->id(); // <-- Tambahkan baris ini
+            $table->id();
             $table->foreignId('pegawai_id')->constrained()->onDelete('cascade');
+            $table->foreignId('potongan_id')->nullable()->constrained('potongans')->onDelete('set null'); // Relasi ke tabel potongans
             $table->integer('gaji_pokok');
             $table->integer('tunjangan')->nullable();
-            $table->integer('potongan')->nullable();
             $table->integer('total_gaji');
-            $table->timestamps(); // opsional, jika ingin created_at & updated_at
+            $table->timestamps();
         });
     }
 

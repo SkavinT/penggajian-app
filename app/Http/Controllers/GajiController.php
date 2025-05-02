@@ -25,23 +25,25 @@ class GajiController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'pegawai_id' => 'required',
+            'pegawai_id' => 'required|exists:pegawais,id',
             'gaji_pokok' => 'required|integer',
             'tunjangan' => 'nullable|integer',
             'potongan' => 'nullable|integer',
+            'keterangan' => 'nullable|string',
         ]);
 
-        $total_gaji = $request->gaji_pokok + ($request->tunjangan ?? 0) - ($request->potongan ?? 0);
+        $totalGaji = $request->gaji_pokok + ($request->tunjangan ?? 0) - ($request->potongan ?? 0);
 
         Gaji::create([
             'pegawai_id' => $request->pegawai_id,
             'gaji_pokok' => $request->gaji_pokok,
-            'tunjangan' => $request->tunjangan ?? 0,
-            'potongan' => $request->potongan ?? 0,
-            'total_gaji' => $total_gaji,
+            'tunjangan' => $request->tunjangan,
+            'potongan' => $request->potongan,
+            'total_gaji' => $totalGaji,
+            'keterangan' => $request->keterangan,
         ]);
 
-        return redirect()->route('gaji.index')->with('success', 'Gaji berhasil ditambahkan.');
+        return redirect()->route('gaji.index')->with('success', 'Data gaji berhasil ditambahkan.');
     }
 
     public function edit(Gaji $gaji)
@@ -55,23 +57,25 @@ class GajiController extends Controller
     public function update(Request $request, Gaji $gaji)
     {
         $request->validate([
-            'pegawai_id' => 'required',
+            'pegawai_id' => 'required|exists:pegawais,id',
             'gaji_pokok' => 'required|integer',
             'tunjangan' => 'nullable|integer',
             'potongan' => 'nullable|integer',
+            'keterangan' => 'nullable|string',
         ]);
 
-        $total_gaji = $request->gaji_pokok + ($request->tunjangan ?? 0) - ($request->potongan ?? 0);
+        $totalGaji = $request->gaji_pokok + ($request->tunjangan ?? 0) - ($request->potongan ?? 0);
 
         $gaji->update([
             'pegawai_id' => $request->pegawai_id,
             'gaji_pokok' => $request->gaji_pokok,
-            'tunjangan' => $request->tunjangan ?? 0,
-            'potongan' => $request->potongan ?? 0,
-            'total_gaji' => $total_gaji,
+            'tunjangan' => $request->tunjangan,
+            'potongan' => $request->potongan,
+            'total_gaji' => $totalGaji,
+            'keterangan' => $request->keterangan,
         ]);
 
-        return redirect()->route('gaji.index')->with('success', 'Gaji berhasil diupdate.');
+        return redirect()->route('gaji.index')->with('success', 'Data gaji berhasil diperbarui.');
     }
 
     public function destroy(Gaji $gaji)

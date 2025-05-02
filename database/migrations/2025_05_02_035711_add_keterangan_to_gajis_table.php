@@ -11,12 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('potongans', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('pegawai_id')->constrained()->onDelete('cascade'); // Relasi ke tabel pegawai
-            $table->string('nama_potongan');
-            $table->integer('jumlah');
-            $table->timestamps();
+        Schema::table('gajis', function (Blueprint $table) {
+            $table->text('keterangan')->nullable()->after('total_gaji'); // Tambahkan kolom keterangan
         });
     }
 
@@ -25,6 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('potongans');
+        Schema::table('gajis', function (Blueprint $table) {
+            $table->dropColumn('keterangan');
+        });
     }
 };

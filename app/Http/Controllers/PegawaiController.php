@@ -9,7 +9,7 @@ class PegawaiController extends Controller
 {
     public function index()
     {
-        $pegawais = Pegawai::paginate(10); // 10 = jumlah data per halaman
+        $pegawais = Pegawai::all(); // Ambil semua data pegawai
         return view('pegawai.index', compact('pegawais'));
     }
 
