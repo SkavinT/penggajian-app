@@ -3,14 +3,15 @@
 namespace App\Http\Controllers;
 
 use App\Models\Tunjangan;
+use App\Models\Pegawai;
 use Illuminate\Http\Request;
 
 class TunjanganController extends Controller
 {
     public function index()
     {
-        $tunjangans = Tunjangan::all();
-        return view('tunjangan.index', compact('tunjangans'));
+        $pegawai = Pegawai::with('tunjangans')->get();
+        return view('tunjangan.index', compact('pegawai'));
     }
 
     public function create()

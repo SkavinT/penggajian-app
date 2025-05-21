@@ -27,4 +27,9 @@ class Pegawai extends Model
     {
         return $this->hasMany(Gaji::class, 'pegawai_id');
     }
+    
+    public function tunjangans()
+    {
+        return $this->hasMany(\App\Models\Tunjangan::class, 'pegawai_id');
+    }
 }
