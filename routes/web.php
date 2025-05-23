@@ -1,28 +1,27 @@
 <?php
 
-use App\Http\Controllers\PegawaiController;
-use App\Http\Controllers\GajiController;
-use App\Http\Controllers\TunjanganController;
-use App\Http\Controllers\PotonganKeterlambatanController;
+use App\Http\Controllers\ProfileController;
+use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
+use Inertia\Inertia;
 
-// Ini buat redirect awal
-Route::get('/', fn() => redirect('/dashboard'));
-
-// Ini buat Dashboard
-use App\Models\Pegawai;
+Route::get('/', function () {
+    return Inertia::render('Welcome', [
+        'canLogin' => Route::has('login'),
+        'canRegister' => Route::has('register'),
+        'laravelVersion' => Application::VERSION,
+        'phpVersion' => PHP_VERSION,
+    ]);
+});
 
 Route::get('/dashboard', function () {
-    $jumlahPegawai = Pegawai::count();
-    $totalGaji = Pegawai::sum('gaji_pokok');
+    return Inertia::render('Dashboard');
+})->middleware(['auth', 'verified'])->name('dashboard');
 
-    return view('dashboard', compact('jumlahPegawai', 'totalGaji'));
-})->name('dashboard');
+Route::middleware('auth')->group(function () {
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+});
 
-// Ini resource route ke Controller
-Route::resources([
-    'pegawai' => PegawaiController::class,
-    'gaji' => GajiController::class,
-    'tunjangan' => TunjanganController::class,
-    'potongan' => PotonganKeterlambatanController::class,
-]);
+require __DIR__.'/auth.php';

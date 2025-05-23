@@ -30,6 +30,6 @@ class Pegawai extends Model
     
     public function tunjangans()
     {
-        return $this->hasMany(\App\Models\Tunjangan::class, 'pegawai_id');
+        return $this->hasMany(Tunjangan::class, 'pegawai_id');
     }
 }

@@ -3,7 +3,6 @@
 
 @section('content')
     <h1>Tambah Data Gaji</h1>
-
     <form action="{{ route('gaji.store') }}" method="POST">
         @csrf
         <!-- Pilih Pegawai -->
@@ -17,12 +16,11 @@
             </select>
             <small class="form-text text-muted">Pilih pegawai yang akan menerima gaji.</small>
         </div>
-
         <!-- Gaji Pokok -->
         <div class="mb-3">
             <label for="gaji_pokok" class="form-label">Gaji Pokok</label>
             <input type="number" name="gaji_pokok" id="gaji_pokok" class="form-control" required>
-            <small class="form-text text-muted">Masukkan gaji pokok pegawai dalam angka (contoh: 5000000).</small>
+            <small class="form-text text-muted">Masukkan gaji pokok pegawai sesuai data model.</small>
         </div>
 
         <!-- Tunjangan -->

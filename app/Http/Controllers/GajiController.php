@@ -34,7 +34,8 @@ class GajiController extends Controller
 
         $totalGaji = $request->gaji_pokok + ($request->tunjangan ?? 0) - ($request->potongan ?? 0);
 
-        Gaji::create([
+        // Simpan data gaji ke tabel gajis
+        $gaji = Gaji::create([
             'pegawai_id' => $request->pegawai_id,
             'gaji_pokok' => $request->gaji_pokok,
             'tunjangan' => $request->tunjangan,
@@ -42,6 +43,16 @@ class GajiController extends Controller
             'total_gaji' => $totalGaji,
             'keterangan' => $request->keterangan,
         ]);
+
+        // Simpan data tunjangan ke tabel tunjangan
+        if ($request->tunjangan) {
+            Tunjangan::create([
+                'pegawai_id' => $request->pegawai_id,
+                'nama_tunjangan' => 'Tunjangan Gaji', // Nama default atau sesuai kebutuhan
+                'jumlah_tunjangan' => $request->tunjangan,
+                'keterangan' => $request->keterangan,
+            ]);
+        }
 
         return redirect()->route('gaji.index')->with('success', 'Data gaji berhasil ditambahkan.');
     }

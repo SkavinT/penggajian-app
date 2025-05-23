@@ -21,12 +21,12 @@
                 <td>{{ $data->nama }}</td>
                 <td>{{ $data->jabatan }}</td>
                 <td>
-                    @foreach($data->tunjangans as $tunjangan)
-                        {{ $tunjangan->keterangan ?? '-' }}<br>
+                    @foreach($data->gajis as $gaji)
+                        {{ $gaji->keterangan ?? '-' }}<br>
                     @endforeach
                 </td>
                 <td>
-                    Rp {{ number_format($data->tunjangans->sum('tunjangan'), 0, ',', '.') }}
+                    Rp {{ number_format($data->tunjangans->sumv('jumlah_tunjangan'), 0, ',', '.') }}
                 </td>
             </tr>
             @endforeach
@@ -34,16 +34,3 @@
     </table>
 </div>
 @endsection
-
-<?php
-use App\Models\Pegawai;
-
-class TunjanganController extends Controller
-{
-    public function index()
-    {
-        $pegawai = Pegawai::with('tunjangans')->get();
-        return view('tunjangan.index', compact('pegawai'));
-    }
-}
-?>
