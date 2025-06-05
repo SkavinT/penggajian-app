@@ -1,9 +1,8 @@
-<!-- filepath: resources/views/auth/login.blade.php -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Login - Aplikasi Penggajian Pertamina</title>
+    <title>Register - Aplikasi Penggajian Pertamina</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- Bootstrap 4 CDN -->
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
@@ -55,16 +54,31 @@
                     <div class="subtitle">PT PERTAMINA</div>
                 </div>
                 <div class="card-body p-4">
-                    @if(session('status'))
-                        <div class="alert alert-success">{{ session('status') }}</div>
+                    @if ($errors->any())
+                        <div class="alert alert-danger">
+                            <ul class="mb-0">
+                                @foreach ($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
                     @endif
-                    <form method="POST" action="{{ route('login') }}">
+                    <form method="POST" action="{{ route('register') }}">
                         @csrf
                         <div class="form-group">
+                            <label for="name">Nama</label>
+                            <input id="name" type="text"
+                                   class="form-control @error('name') is-invalid @enderror"
+                                   name="name" value="{{ old('name') }}" required autofocus>
+                            @error('name')
+                                <span class="invalid-feedback d-block">{{ $message }}</span>
+                            @enderror
+                        </div>
+                        <div class="form-group mt-3">
                             <label for="email">Email</label>
                             <input id="email" type="email"
                                    class="form-control @error('email') is-invalid @enderror"
-                                   name="email" value="{{ old('email') }}" required autofocus>
+                                   name="email" value="{{ old('email') }}" required>
                             @error('email')
                                 <span class="invalid-feedback d-block">{{ $message }}</span>
                             @enderror
@@ -73,18 +87,20 @@
                             <label for="password">Password</label>
                             <input id="password" type="password"
                                    class="form-control @error('password') is-invalid @enderror"
-                                   name="password" required>
+                                   name="password" required autocomplete="new-password">
                             @error('password')
                                 <span class="invalid-feedback d-block">{{ $message }}</span>
                             @enderror
                         </div>
-                        <div class="form-group form-check mt-3">
-                            <input class="form-check-input" type="checkbox" name="remember" id="remember">
-                            <label class="form-check-label" for="remember">Ingat Saya</label>
+                        <div class="form-group mt-3">
+                            <label for="password_confirmation">Konfirmasi Password</label>
+                            <input id="password_confirmation" type="password"
+                                   class="form-control"
+                                   name="password_confirmation" required>
                         </div>
-                        <button type="submit" class="btn btn-pertamina btn-block mt-4">Login</button>
+                        <button type="submit" class="btn btn-pertamina btn-block mt-4">Register</button>
                         <div class="text-center mt-3">
-                            <a href="{{ route('password.request') }}" style="color:#e1251b;">Lupa Password?</a>
+                            <a href="{{ route('login') }}" style="color:#e1251b;">Sudah punya akun? Login</a>
                         </div>
                     </form>
                 </div>
