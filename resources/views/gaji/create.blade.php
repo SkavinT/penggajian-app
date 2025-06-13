@@ -2,64 +2,108 @@
 @extends('layouts.app')
 
 @section('content')
-    <h1>Tambah Data Gaji</h1>
-    <form action="{{ route('gaji.store') }}" method="POST">
-        @csrf
-        <!-- Pilih Pegawai -->
-        <div class="mb-3">
-            <label for="pegawai_id" class="form-label">Pegawai</label>
-            <select name="pegawai_id" id="pegawai_id" class="form-control" required>
-                <option value="" disabled selected>Pilih Pegawai</option>
-                @foreach ($pegawais as $pegawai)
-                    <option value="{{ $pegawai->id }}">{{ $pegawai->nama }}</option>
-                @endforeach
-            </select>
-            <small class="form-text text-muted">Pilih pegawai yang akan menerima gaji.</small>
-        </div>
-        <!-- Gaji Pokok -->
-        <div class="mb-3">
-            <label for="gaji_pokok" class="form-label">Gaji Pokok</label>
-            <input type="number" name="gaji_pokok" id="gaji_pokok" class="form-control" required>
-            <small class="form-text text-muted">Masukkan gaji pokok pegawai sesuai data model.</small>
-        </div>
+<div class="container">
+  <h1 class="my-4">Tambah Data Gaji</h1>
 
-        <!-- Tunjangan -->
-        <div class="mb-3">
-            <label for="tunjangan" class="form-label">Tunjangan</label>
-            <input type="number" name="tunjangan" id="tunjangan" class="form-control">
-            <small class="form-text text-muted">Masukkan tunjangan pegawai (opsional).</small>
-        </div>
+  <form method="POST" action="{{ route('gaji.store') }}" id="gaji-form">
+    @csrf
 
-        <!-- Potongan -->
-        <div class="mb-3">
-            <label for="potongan" class="form-label">Potongan</label>
-            <input type="number" name="potongan" id="potongan" class="form-control">
-            <small class="form-text text-muted">Masukkan jumlah potongan gaji (opsional).</small>
-        </div>
+    {{-- Pilih Pegawai --}}
+    <div class="form-group mb-3">
+      <label for="pegawai_id">Pegawai</label>
+      <select id="pegawai_id" name="pegawai_id"
+              class="form-control @error('pegawai_id') is-invalid @enderror" required>
+        <option value="" disabled selected>Pilih Pegawai</option>
+        @foreach($pegawais as $pegawai)
+          <option value="{{ $pegawai->id }}"
+                  data-gaji="{{ $pegawai->gaji_pokok }}">
+            {{ $pegawai->nama }}
+          </option>
+        @endforeach
+      </select>
+      @error('pegawai_id')<div class="invalid-feedback">{{ $message }}</div>@enderror
+    </div>
 
-        <!-- Keterangan -->
-        <div class="mb-3">
-            <label for="keterangan" class="form-label">Keterangan</label>
-            <textarea name="keterangan" id="keterangan" class="form-control" rows="3"></textarea>
-            <small class="form-text text-muted">Masukkan keterangan tambahan (opsional).</small>
-        </div>
+    {{-- Gaji Pokok --}}
+    <div class="form-group mb-3">
+      <label for="gaji_pokok">Gaji Pokok</label>
+      <input id="gaji_pokok" name="gaji_pokok" type="text"
+             class="form-control currency @error('gaji_pokok') is-invalid @enderror"
+             value="{{ old('gaji_pokok') }}" required>
+      @error('gaji_pokok')<div class="invalid-feedback">{{ $message }}</div>@enderror
+    </div>
 
-        <button type="submit" class="btn btn-primary">Simpan</button>
-    </form>
+    {{-- Tunjangan --}}
+    <div class="form-group mb-3">
+      <label for="tunjangan">Tunjangan</label>
+      <input id="tunjangan" name="tunjangan" type="text"
+             class="form-control currency @error('tunjangan') is-invalid @enderror"
+             value="{{ old('tunjangan') }}">
+      @error('tunjangan')<div class="invalid-feedback">{{ $message }}</div>@enderror
+    </div>
 
-    <script>
-        // Hitung total gaji otomatis
-        document.getElementById('gaji_pokok').addEventListener('input', calculateTotal);
-        document.getElementById('tunjangan').addEventListener('input', calculateTotal);
-        document.getElementById('potongan').addEventListener('input', calculateTotal);
+    {{-- Potongan --}}
+    <div class="form-group mb-3">
+      <label for="potongan">Potongan</label>
+      <input id="potongan" name="potongan" type="text"
+             class="form-control currency @error('potongan') is-invalid @enderror"
+             value="{{ old('potongan') }}">
+      @error('potongan')<div class="invalid-feedback">{{ $message }}</div>@enderror
+    </div>
 
-        function calculateTotal() {
-            const gajiPokok = parseInt(document.getElementById('gaji_pokok').value) || 0;
-            const tunjangan = parseInt(document.getElementById('tunjangan').value) || 0;
-            const potongan = parseInt(document.getElementById('potongan').value) || 0;
+    {{-- Tanggal --}}
+    <div class="form-group mb-3">
+      <label for="tanggal">Tanggal</label>
+      <input id="tanggal" name="tanggal" type="date"
+             class="form-control @error('tanggal') is-invalid @enderror"
+             value="{{ old('tanggal') }}" required>
+      @error('tanggal')<div class="invalid-feedback">{{ $message }}</div>@enderror
+    </div>
 
-            const totalGaji = gajiPokok + tunjangan - potongan;
-            console.log('Total Gaji:', totalGaji); // Debugging
-        }
-    </script>
+    {{-- Bulan --}}
+    <div class="form-group mb-3">
+      <label for="bulan">Bulan</label>
+      <input id="bulan" name="bulan" type="month"
+             class="form-control @error('bulan') is-invalid @enderror"
+             value="{{ old('bulan') }}" required>
+      @error('bulan')<div class="invalid-feedback">{{ $message }}</div>@enderror
+    </div>
+
+    {{-- Keterangan --}}
+    <div class="form-group mb-3">
+      <label for="keterangan">Keterangan</label>
+      <textarea id="keterangan" name="keterangan" rows="3"
+                class="form-control @error('keterangan') is-invalid @enderror">{{ old('keterangan') }}</textarea>
+      @error('keterangan')<div class="invalid-feedback">{{ $message }}</div>@enderror
+    </div>
+
+    <button type="submit" class="btn btn-primary">Simpan</button>
+  </form>
+</div>
 @endsection
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const formatCurrency = v => v.replace(/\D/g,'')
+                                .replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+
+  document.querySelectorAll('.currency').forEach(input => {
+    input.addEventListener('input', () => {
+      input.value = formatCurrency(input.value);
+    });
+  });
+
+  document.getElementById('pegawai_id').addEventListener('change', function() {
+    let gaji = this.selectedOptions[0].dataset.gaji || 0;
+    document.getElementById('gaji_pokok').value = formatCurrency(gaji);
+  });
+
+  document.getElementById('gaji-form').addEventListener('submit', () => {
+    document.querySelectorAll('.currency').forEach(input => {
+      input.value = input.value.replace(/\./g,'');
+    });
+  });
+});
+</script>
+@endpush

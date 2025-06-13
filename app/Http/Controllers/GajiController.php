@@ -27,34 +27,30 @@ class GajiController extends Controller
         $request->validate([
             'pegawai_id' => 'required|exists:pegawais,id',
             'gaji_pokok' => 'required|integer',
-            'tunjangan' => 'nullable|integer',
-            'potongan' => 'nullable|integer',
-            'keterangan' => 'nullable|string',
+            'tunjangan'   => 'nullable|integer',
+            'potongan'    => 'nullable|integer',
+            'tanggal'     => 'required|date',
+            'bulan'       => 'required|string',
+            'keterangan'  => 'nullable|string',
         ]);
 
-        $totalGaji = $request->gaji_pokok + ($request->tunjangan ?? 0) - ($request->potongan ?? 0);
+        $totalGaji = $request->gaji_pokok
+            + ($request->tunjangan ?? 0)
+            - ($request->potongan ?? 0);
 
-        // Simpan data gaji ke tabel gajis
-        $gaji = Gaji::create([
-            'pegawai_id' => $request->pegawai_id,
-            'gaji_pokok' => $request->gaji_pokok,
-            'tunjangan' => $request->tunjangan,
-            'potongan' => $request->potongan,
-            'total_gaji' => $totalGaji,
-            'keterangan' => $request->keterangan,
+        Gaji::create([
+            'pegawai_id'  => $request->pegawai_id,
+            'gaji_pokok'  => $request->gaji_pokok,
+            'tunjangan'   => $request->tunjangan ?? 0,
+            'potongan'    => $request->potongan ?? 0,
+            'total_gaji'  => $totalGaji,
+            'tanggal'     => $request->tanggal,
+            'bulan'       => $request->bulan,
+            'keterangan'  => $request->keterangan,
         ]);
 
-        // Simpan data tunjangan ke tabel tunjangan
-        if ($request->tunjangan) {
-            Tunjangan::create([
-                'pegawai_id' => $request->pegawai_id,
-                'nama_tunjangan' => 'Tunjangan Gaji', // Nama default atau sesuai kebutuhan
-                'jumlah_tunjangan' => $request->tunjangan,
-                'keterangan' => $request->keterangan,
-            ]);
-        }
-
-        return redirect()->route('gaji.index')->with('success', 'Data gaji berhasil ditambahkan.');
+        return redirect()->route('gaji.index')
+                         ->with('success', 'Data gaji berhasil ditambahkan.');
     }
 
     public function edit(Gaji $gaji)
@@ -70,23 +66,26 @@ class GajiController extends Controller
         $request->validate([
             'pegawai_id' => 'required|exists:pegawais,id',
             'gaji_pokok' => 'required|integer',
-            'tunjangan' => 'nullable|integer',
-            'potongan' => 'nullable|integer',
+            'tunjangan'  => 'nullable|integer',
+            'potongan'   => 'nullable|integer',
             'keterangan' => 'nullable|string',
         ]);
 
-        $totalGaji = $request->gaji_pokok + ($request->tunjangan ?? 0) - ($request->potongan ?? 0);
+        $totalGaji = $request->gaji_pokok
+            + ($request->tunjangan ?? 0)
+            - ($request->potongan ?? 0);
 
         $gaji->update([
             'pegawai_id' => $request->pegawai_id,
             'gaji_pokok' => $request->gaji_pokok,
-            'tunjangan' => $request->tunjangan,
-            'potongan' => $request->potongan,
+            'tunjangan'  => $request->tunjangan ?? 0,
+            'potongan'   => $request->potongan ?? 0,
             'total_gaji' => $totalGaji,
             'keterangan' => $request->keterangan,
         ]);
 
-        return redirect()->route('gaji.index')->with('success', 'Data gaji berhasil diperbarui.');
+        return redirect()->route('gaji.index')
+                         ->with('success', 'Data gaji berhasil diperbarui.');
     }
 
     public function destroy(Gaji $gaji)

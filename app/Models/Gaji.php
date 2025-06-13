@@ -15,6 +15,8 @@ class Gaji extends Model
         'tunjangan',
         'potongan',
         'total_gaji',
+        'tanggal',
+        'bulan',
         'keterangan',
     ];
 

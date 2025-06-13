@@ -1,43 +1,80 @@
-@extends('layouts.main')
+@extends('layouts.app')
 
 @section('content')
 <div class="container">
     <h1>Edit Pegawai</h1>
 
-    <form action="{{ route('pegawai.update', $pegawai->id) }}" method="POST">
+    <form action="{{ route('pegawai.store') }}" method="POST" id="pegawai-form">
         @csrf
-        @method('PUT')
-        <div class="form-group mb-2">
-            <label for="nip">NIP</label>
-            <input type="text" name="nip" value="{{ $pegawai->nip }}" class="form-control">
+
+        {{-- NIP --}}
+        <div class="mb-3">
+            <label for="nip" class="form-label">NIP</label>
+            <input type="text" name="nip" id="nip" class="form-control" required>
         </div>
 
-        <div class="form-group mb-2">
-            <label for="nama">Nama</label>
-            <input type="text" name="nama" value="{{ $pegawai->nama }}" class="form-control">
+        {{-- Nama --}}
+        <div class="mb-3">
+            <label for="nama" class="form-label">Nama Pegawai</label>
+            <input type="text" name="nama" id="nama" class="form-control" required>
         </div>
 
-        <div class="form-group mb-2">
-            <label for="jabatan">Jabatan</label>
-            <input type="text" name="jabatan" value="{{ $pegawai->jabatan }}" class="form-control">
+        {{-- Jabatan --}}
+        <div class="mb-3">
+            <label for="jabatan" class="form-label">Jabatan</label>
+            <input type="text" name="jabatan" id="jabatan" class="form-control" required>
         </div>
 
-        <div class="form-group mb-2">
-            <label for="gaji_pokok">Gaji Pokok</label>
-            <input type="text" name="gaji_pokok" value="{{ $pegawai->gaji_pokok }}" class="form-control">
+        {{-- Gaji Pokok --}}
+        <div class="mb-3">
+            <label for="gaji_pokok" class="form-label">Gaji Pokok</label>
+            <input id="gaji_pokok"
+                   name="gaji_pokok"
+                   type="text"
+                   class="form-control currency @error('gaji_pokok') is-invalid @enderror"
+                   value="{{ old('gaji_pokok') }}" required>
+            @error('gaji_pokok')
+                <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
         </div>
 
-        <div class="form-group mb-2">
-            <label for="alamat">Alamat</label>
-            <input type="text" name="alamat" value="{{ $pegawai->alamat }}" class="form-control">
+        {{-- Alamat --}}
+        <div class="mb-3">
+            <label for="alamat" class="form-label">Alamat</label>
+            <textarea name="alamat" id="alamat" class="form-control" rows="3" required>{{ old('alamat') }}</textarea>
         </div>
 
-        <div class="form-group mb-3">
-            <label for="telepon">Telepon</label>
-            <input type="text" name="telepon" value="{{ $pegawai->telepon }}" class="form-control">
+        {{-- Telepon --}}
+        <div class="mb-3">
+            <label for="telepon" class="form-label">No Telepon</label>
+            <input type="text" name="telepon" id="telepon" class="form-control" required>
         </div>
 
-        <button type="submit" class="btn btn-primary">Update</button>
+        <button type="submit" class="btn btn-primary">Simpan</button>
+        <a href="{{ route('pegawai.index') }}" class="btn btn-secondary">Batal</a>
     </form>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    // format input as currency with dot separator
+    const formatCurrency = v => v.replace(/\D/g, '')
+                                 .replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+
+    document.querySelectorAll('.currency').forEach(input => {
+        input.addEventListener('input', e => {
+            e.target.value = formatCurrency(e.target.value);
+        });
+    });
+
+    // strip dots before form submit
+    document.getElementById('pegawai-form').addEventListener('submit', () => {
+        document.querySelectorAll('.currency').forEach(input => {
+            input.value = input.value.replace(/\./g, '');
+        });
+    });
+});
+</script>
+@endpush

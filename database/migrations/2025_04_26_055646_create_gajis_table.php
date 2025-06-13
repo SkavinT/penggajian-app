@@ -18,6 +18,8 @@ return new class extends Migration
             $table->integer('gaji_pokok');
             $table->integer('tunjangan')->nullable();
             $table->integer('total_gaji');
+            $table->date('tanggal')->after('potongan');
+            $table->string('bulan', 20)->after('tanggal');
             $table->timestamps();
         });
     }

@@ -22,6 +22,8 @@
                     <th>Potongan</th>
                     <th>Total Gaji</th>
                     <th>Keterangan</th>
+                    <th>Tanggal</th>    <!-- kolom tanggal -->
+                    <th>Bulan</th>      <!-- kolom bulan -->
                     <th>Edit</th>
                 </tr>
             </thead>
@@ -35,9 +37,12 @@
                     <td>{{ number_format($gaji->potongan ?? 0, 0, ',', '.') }}</td>
                     <td>{{ number_format($gaji->total_gaji, 0, ',', '.') }}</td>
                     <td>{{ $gaji->keterangan ?? '-' }}</td>
+                    <td>{{ \Carbon\Carbon::parse($gaji->tanggal)->format('d-m-Y') }}</td>  <!-- tampilkan tanggal -->
+                    <td>{{ $gaji->bulan }}</td>                                          <!-- tampilkan bulan -->
                     <td>
-                        <a href="{{ route('gaji.edit', $gaji->id) }}" class="btn btn-warning btn-sm">Edit</a>
-                        {{-- <a href="{{ route('gaji.update', $gaji->id) }}" class="btn btn-success btn-sm">Update</a> --}}
+                        <a href="{{ route('gaji.edit', $gaji->id) }}" class="btn btn-warning btn-sm">
+                            Edit
+                        </a>
                     </td>
                 </tr>
                 @endforeach

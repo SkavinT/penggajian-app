@@ -5,10 +5,10 @@
 
     <ul class="navbar-nav ml-auto">
         <li class="nav-item">
-            <a class="nav-link text-white" href="#">
+            {{-- <a class="nav-link text-white" href="#">
                 <i class="fas fa-user fa-sm fa-fw mr-2"></i>
                 Profile
-            </a>
+            </a> --}}
         </li>
     </ul>
 </nav>

@@ -3,55 +3,114 @@
 
 @section('content')
 <div class="container">
-    <h1 class="my-4">Edit Data Gaji</h1>
+  <h1 class="my-4">Edit Data Gaji</h1>
 
-    <form action="{{ route('gaji.update', $gaji->id) }}" method="POST">
-        @csrf
-        @method('PUT')
+  <form method="POST" action="{{ route('gaji.update', $gaji->id) }}" id="gaji-form">
+    @csrf
+    @method('PUT')
 
-        <!-- Pilih Pegawai -->
-        <div class="mb-3">
-            <label for="pegawai_id" class="form-label">Pegawai</label>
-            <select name="pegawai_id" id="pegawai_id" class="form-control">
-                @foreach($pegawais as $pegawai)
-                    <option value="{{ $pegawai->id }}" {{ $gaji->pegawai_id == $pegawai->id ? 'selected' : '' }}>
-                        {{ $pegawai->nama }}
-                    </option>
-                @endforeach
-            </select>
-        </div>
+    {{-- Pilih Pegawai --}}
+    <div class="form-group mb-3">
+      <label for="pegawai_id">Pegawai</label>
+      <select id="pegawai_id" name="pegawai_id"
+              class="form-control @error('pegawai_id') is-invalid @enderror" required>
+        <option value="" disabled>Pilih Pegawai</option>
+        @foreach($pegawais as $pegawai)
+          <option value="{{ $pegawai->id }}"
+                  data-gaji="{{ $pegawai->gaji_pokok }}"
+                  {{ old('pegawai_id', $gaji->pegawai_id)==$pegawai->id ? 'selected' : '' }}>
+            {{ $pegawai->nama }}
+          </option>
+        @endforeach
+      </select>
+      @error('pegawai_id')<div class="invalid-feedback">{{ $message }}</div>@enderror
+    </div>
 
-        <!-- Gaji Pokok -->
-        <div class="mb-3">
-            <label for="gaji_pokok" class="form-label">Gaji Pokok</label>
-            <input type="number" name="gaji_pokok" id="gaji_pokok" class="form-control" value="{{ $gaji->gaji_pokok }}">
-        </div>
+    {{-- Gaji Pokok --}}
+    <div class="form-group mb-3">
+      <label for="gaji_pokok">Gaji Pokok</label>
+      <input id="gaji_pokok" name="gaji_pokok" type="text"
+             class="form-control currency @error('gaji_pokok') is-invalid @enderror"
+             value="{{ old('gaji_pokok', number_format($gaji->gaji_pokok,0,'','')) }}" required>
+      @error('gaji_pokok')<div class="invalid-feedback">{{ $message }}</div>@enderror
+    </div>
 
-        <!-- Tunjangan -->
-        <div class="mb-3">
-            <label for="tunjangan" class="form-label">Tunjangan</label>
-            <input type="number" name="tunjangan" id="tunjangan" class="form-control" value="{{ $gaji->tunjangan }}">
-        </div>
+    {{-- Tunjangan --}}
+    <div class="form-group mb-3">
+      <label for="tunjangan">Tunjangan</label>
+      <input id="tunjangan" name="tunjangan" type="text"
+             class="form-control currency @error('tunjangan') is-invalid @enderror"
+             value="{{ old('tunjangan', number_format($gaji->tunjangan ?? 0,0,'','')) }}">
+      @error('tunjangan')<div class="invalid-feedback">{{ $message }}</div>@enderror
+    </div>
 
-        <!-- Potongan -->
-        <div class="mb-3">
-            <label for="potongan" class="form-label">Potongan</label>
-            <input type="number" name="potongan" id="potongan" class="form-control" value="{{ $gaji->potongan }}">
-        </div>
+    {{-- Potongan --}}
+    <div class="form-group mb-3">
+      <label for="potongan">Potongan</label>
+      <input id="potongan" name="potongan" type="text"
+             class="form-control currency @error('potongan') is-invalid @enderror"
+             value="{{ old('potongan', number_format($gaji->potongan ?? 0,0,'','')) }}">
+      @error('potongan')<div class="invalid-feedback">{{ $message }}</div>@enderror
+    </div>
 
-        <!-- Total Gaji -->
-        <div class="mb-3">
-            <label for="total_gaji" class="form-label">Total Gaji</label>
-            <input type="number" name="total_gaji" id="total_gaji" class="form-control" value="{{ $gaji->total_gaji }}" readonly>
-        </div>
+    {{-- Tanggal --}}
+    <div class="form-group mb-3">
+      <label for="tanggal">Tanggal</label>
+      <input id="tanggal" name="tanggal" type="date"
+             class="form-control @error('tanggal') is-invalid @enderror"
+             value="{{ old('tanggal', $gaji->tanggal) }}" required>
+      @error('tanggal')<div class="invalid-feedback">{{ $message }}</div>@enderror
+    </div>
 
-        <!-- Keterangan -->
-        <div class="mb-3">
-            <label for="keterangan" class="form-label">Keterangan</label>
-            <textarea name="keterangan" id="keterangan" class="form-control" rows="3">{{ $gaji->keterangan }}</textarea>
-        </div>
+    {{-- Bulan --}}
+    <div class="form-group mb-3">
+      <label for="bulan">Bulan</label>
+      <input id="bulan" name="bulan" type="month"
+             class="form-control @error('bulan') is-invalid @enderror"
+             value="{{ old('bulan', $gaji->bulan) }}" required>
+      @error('bulan')<div class="invalid-feedback">{{ $message }}</div>@enderror
+    </div>
 
-        <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
-    </form>
+    {{-- Keterangan --}}
+    <div class="form-group mb-3">
+      <label for="keterangan">Keterangan</label>
+      <textarea id="keterangan" name="keterangan" rows="3"
+                class="form-control @error('keterangan') is-invalid @enderror">{{ old('keterangan', $gaji->keterangan) }}</textarea>
+      @error('keterangan')<div class="invalid-feedback">{{ $message }}</div>@enderror
+    </div>
+
+    <button type="submit" class="btn btn-primary">Update Gaji</button>
+  </form>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const formatCurrency = v => v.replace(/\D/g,'')
+                                .replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+
+  document.querySelectorAll('.currency').forEach(input => {
+    // inisialisasi format tampilan
+    input.value = formatCurrency(input.value);
+
+    input.addEventListener('input', () => {
+      input.value = formatCurrency(input.value);
+    });
+  });
+
+  // auto-fill gaji_pokok saat pegawai dipilih
+  document.getElementById('pegawai_id').addEventListener('change', function() {
+    let gaji = this.selectedOptions[0].dataset.gaji || 0;
+    document.getElementById('gaji_pokok').value = formatCurrency(gaji);
+  });
+
+  // strip titik sebelum submit
+  document.getElementById('gaji-form').addEventListener('submit', () => {
+    document.querySelectorAll('.currency').forEach(input => {
+      input.value = input.value.replace(/\./g,'');
+    });
+  });
+});
+</script>
+@endpush
