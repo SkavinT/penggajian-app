@@ -13,14 +13,16 @@ return new class extends Migration
     {
         Schema::create('gajis', function (Blueprint $table) {
             $table->id();
+
             $table->foreignId('pegawai_id')->constrained()->onDelete('cascade');
-            $table->foreignId('potongan_id')->nullable()->constrained('potongans')->onDelete('set null'); // Relasi ke tabel potongans
+            $table->foreignId('potongan_id')->nullable()->constrained('potongans')->onDelete('set null');
             $table->integer('gaji_pokok');
             $table->integer('tunjangan')->nullable();
             $table->integer('total_gaji');
-            $table->date('tanggal')->after('potongan');
-            $table->string('bulan', 20)->after('tanggal');
+            $table->date('tanggal');
+            $table->string('bulan', 20);
             $table->timestamps();
+
         });
     }
 

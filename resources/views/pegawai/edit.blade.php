@@ -4,25 +4,26 @@
 <div class="container">
     <h1>Edit Pegawai</h1>
 
-    <form action="{{ route('pegawai.store') }}" method="POST" id="pegawai-form">
+    <form action="{{ route('pegawai.update', $pegawai->id) }}" method="POST" id="pegawai-form">
         @csrf
+        @method('PUT')
 
         {{-- NIP --}}
         <div class="mb-3">
             <label for="nip" class="form-label">NIP</label>
-            <input type="text" name="nip" id="nip" class="form-control" required>
+            <input type="text" name="nip" id="nip" class="form-control" value="{{ old('nip', $pegawai->nip) }}" required>
         </div>
 
         {{-- Nama --}}
         <div class="mb-3">
             <label for="nama" class="form-label">Nama Pegawai</label>
-            <input type="text" name="nama" id="nama" class="form-control" required>
+            <input type="text" name="nama" id="nama" class="form-control" value="{{ old('nama', $pegawai->nama) }}" required>
         </div>
 
         {{-- Jabatan --}}
         <div class="mb-3">
             <label for="jabatan" class="form-label">Jabatan</label>
-            <input type="text" name="jabatan" id="jabatan" class="form-control" required>
+            <input type="text" name="jabatan" id="jabatan" class="form-control" value="{{ old('jabatan', $pegawai->jabatan) }}" required>
         </div>
 
         {{-- Gaji Pokok --}}
@@ -32,7 +33,7 @@
                    name="gaji_pokok"
                    type="text"
                    class="form-control currency @error('gaji_pokok') is-invalid @enderror"
-                   value="{{ old('gaji_pokok') }}" required>
+                   value="{{ old('gaji_pokok', $pegawai->gaji_pokok) }}" required>
             @error('gaji_pokok')
                 <div class="invalid-feedback">{{ $message }}</div>
             @enderror
@@ -41,13 +42,24 @@
         {{-- Alamat --}}
         <div class="mb-3">
             <label for="alamat" class="form-label">Alamat</label>
-            <textarea name="alamat" id="alamat" class="form-control" rows="3" required>{{ old('alamat') }}</textarea>
+            <textarea name="alamat" id="alamat" class="form-control" rows="3" required>{{ old('alamat', $pegawai->alamat) }}</textarea>
         </div>
 
         {{-- Telepon --}}
         <div class="mb-3">
             <label for="telepon" class="form-label">No Telepon</label>
-            <input type="text" name="telepon" id="telepon" class="form-control" required>
+            <input type="text" name="telepon" id="telepon" class="form-control" value="{{ old('telepon', $pegawai->telepon) }}" required>
+        </div>
+
+        {{-- Email --}}
+        <div class="mb-3">
+            <label for="email" class="form-label">Email</label>
+            <input type="email"
+                   name="email"
+                   id="email"
+                   class="form-control @error('email') is-invalid @enderror"
+                   value="{{ old('email', $pegawai->email) }}" required>
+            @error('email')<div class="invalid-feedback">{{ $message }}</div>@enderror
         </div>
 
         <button type="submit" class="btn btn-primary">Simpan</button>

@@ -9,8 +9,10 @@
         <table class="table table-bordered table-striped align-middle">
             <thead class="table-dark">
                 <tr>
+                    <th>No</th>
                     <th>NIP</th>
                     <th>Nama</th>
+                    <th>Email</th>
                     <th>Jabatan</th>
                     <th>Gaji Pokok</th>
                     <th>Alamat</th>
@@ -19,10 +21,12 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach ($pegawais as $pegawai)
+                @foreach ($pegawais as $i => $pegawai)
                 <tr>
+                    <td>{{ $i+1 }}</td>
                     <td>{{ $pegawai->nip }}</td>
                     <td>{{ $pegawai->nama }}</td>
+                    <td>{{ $pegawai->email }}</td>
                     <td>{{ $pegawai->jabatan }}</td>
                     <td>{{ number_format($pegawai->gaji_pokok, 0, ',', '.') }}</td>
                     <td>{{ $pegawai->alamat }}</td>

@@ -18,6 +18,7 @@ class Pegawai extends Model
         'gaji_pokok',
         'alamat',
         'telepon',
+        'email',          // ← tambah
     ];
 
     public function potongans()

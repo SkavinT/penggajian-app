@@ -21,12 +21,17 @@ class PegawaiController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'nama' => 'required',
+            'nama'    => 'required',
             'jabatan' => 'required',
+            'email'   => 'required|email|unique:pegawais,email',
         ]);
 
-        Pegawai::create($request->all());
-        return redirect()->route('pegawai.index')->with('success', 'Pegawai berhasil ditambahkan.');
+        Pegawai::create($request->only([
+            'nip','nama','jabatan','gaji_pokok','alamat','telepon','email'
+        ]));
+
+        return redirect()->route('pegawai.index')
+                         ->with('success','Pegawai berhasil ditambahkan.');
     }
 
     public function edit(Pegawai $pegawai)
@@ -37,12 +42,17 @@ class PegawaiController extends Controller
     public function update(Request $request, Pegawai $pegawai)
     {
         $request->validate([
-            'nama' => 'required',
+            'nama'    => 'required',
             'jabatan' => 'required',
+            'email'   => "required|email|unique:pegawais,email,{$pegawai->id}",
         ]);
 
-        $pegawai->update($request->all());
-        return redirect()->route('pegawai.index')->with('success', 'Pegawai berhasil diupdate.');
+        $pegawai->update($request->only([
+            'nama','jabatan','gaji_pokok','alamat','telepon','email'
+        ]));
+
+        return redirect()->route('pegawai.index')
+                         ->with('success','Pegawai berhasil diperbarui.');
     }
 
     public function destroy(Pegawai $pegawai)
