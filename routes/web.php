@@ -14,28 +14,40 @@ Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
-// Route resource untuk Gaji, Potongan Keterlambatan, dan Tunjangan
-Route::middleware('auth')->group(function () {
+// -- ROLE A: full CRUD
+Route::middleware(['auth', 'check.role:A'])->group(function () {
+    Route::resource('pegawai', PegawaiController::class);
     Route::resource('gaji', GajiController::class);
-    Route::resource('potongan', PotonganKeterlambatanController::class);
+    Route::resource('potongan-keterlambatan', PotonganKeterlambatanController::class);
     Route::resource('tunjangan', TunjanganController::class);
 });
 
-// Admin (A) bisa edit Pegawai
-Route::middleware(['auth', 'role:A'])->group(function () {
-    Route::get('/pegawai/create', [PegawaiController::class, 'create'])->name('pegawai.create');
-    Route::post('/pegawai', [PegawaiController::class, 'store'])->name('pegawai.store');
-    Route::get('/pegawai/{id}/edit', [PegawaiController::class, 'edit'])->name('pegawai.edit');
-    Route::put('/pegawai/{id}', [PegawaiController::class, 'update'])->name('pegawai.update');
-    Route::delete('/pegawai/{id}', [PegawaiController::class, 'destroy'])->name('pegawai.destroy');
-});
+// -- ROLE T: hanya view (index & show)
+Route::middleware(['auth', 'check.role:T'])->group(function () {
+    // Pegawai
+    Route::get('pegawai', [PegawaiController::class, 'index'])
+         ->name('pegawai.index');
+    Route::get('pegawai/{pegawai}', [PegawaiController::class, 'show'])
+         ->name('pegawai.show');
 
-// Admin (A) dan Tamu (T) hanya bisa melihat Pegawai
-Route::middleware(['auth', 'role:A,T'])->group(function () {
-    Route::get('/pegawai', [PegawaiController::class, 'index'])->name('pegawai.index');
-    Route::get('/pegawai/{id}', [PegawaiController::class, 'show'])->name('pegawai.show');
-});
+    // Gaji
+    Route::get('gaji', [GajiController::class, 'index'])
+         ->name('gaji.index');
+    Route::get('gaji/{gaji}', [GajiController::class, 'show'])
+         ->name('gaji.show');
 
-// Route untuk testing role
+    // Potongan Keterlambatan
+    Route::get('potongan-keterlambatan', [PotonganKeterlambatanController::class, 'index'])
+         ->name('potongan-keterlambatan.index');
+    Route::get('potongan-keterlambatan/{potongan_keterlambatan}', 
+         [PotonganKeterlambatanController::class, 'show'])
+         ->name('potongan-keterlambatan.show');
+
+    // Tunjangan
+    Route::get('tunjangan', [TunjanganController::class, 'index'])
+         ->name('tunjangan.index');
+    Route::get('tunjangan/{tunjangan}', [TunjanganController::class, 'show'])
+         ->name('tunjangan.show');
+});
 
 require __DIR__.'/auth.php';
