@@ -3,7 +3,9 @@
 @section('content')
     <h1>Data Pegawai</h1>
 
-    <a href="{{ route('pegawai.create') }}" class="btn btn-primary mb-3">Tambah Pegawai</a>
+    @if(Auth::user()->role === 'A')
+        <a href="{{ route('pegawai.create') }}" class="btn btn-primary mb-3">Tambah Pegawai</a>
+    @endif
 
     <div class="table-responsive">
         <table class="table table-bordered table-striped align-middle">
@@ -32,8 +34,9 @@
                     <td>{{ $pegawai->alamat }}</td>
                     <td>{{ $pegawai->telepon }}</td>
                     <td>
-                        <a href="{{ route('pegawai.edit', $pegawai->id) }}" class="btn btn-warning btn-sm">Edit</a>
-                        {{-- <a href="{{ route('pegawai.update', $pegawai->id) }}" class="btn btn-success btn-sm">Update</a> --}}
+                        @if(Auth::user()->role === 'A')
+                            <a href="{{ route('pegawai.edit', $pegawai->id) }}" class="btn btn-warning btn-sm">Edit</a>
+                        @endif
                     </td>
                 </tr>
                 @endforeach

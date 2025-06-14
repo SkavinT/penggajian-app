@@ -40,9 +40,9 @@
                     <td>{{ \Carbon\Carbon::parse($gaji->tanggal)->format('d-m-Y') }}</td>  <!-- tampilkan tanggal -->
                     <td>{{ $gaji->bulan }}</td>                                          <!-- tampilkan bulan -->
                     <td>
-                        <a href="{{ route('gaji.edit', $gaji->id) }}" class="btn btn-warning btn-sm">
-                            Edit
-                        </a>
+                        @if(Auth::user()->role === 'A')
+                            <a href="{{ route('pegawai.edit', $pegawai->id) }}" class="btn btn-warning btn-sm">Edit</a>
+                        @endif
                     </td>
                 </tr>
                 @endforeach
