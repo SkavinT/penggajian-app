@@ -16,7 +16,6 @@ class Gaji extends Model
         'potongan',
         'total_gaji',
         'tanggal',
-        'bulan',
         'keterangan',
     ];
 

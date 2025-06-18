@@ -10,15 +10,28 @@ use Illuminate\Http\Request;
 
 class GajiController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $gajis = Gaji::with('pegawai')->paginate(10);
+        $query = Gaji::with('pegawai');
+
+        // Filter berdasarkan bulan dan tahun dari kolom tanggal
+        if ($request->filled('bulan') && $request->filled('tahun')) {
+            $query->whereMonth('tanggal', $request->bulan)
+                  ->whereYear('tanggal', $request->tahun);
+        } elseif ($request->filled('bulan')) {
+            $query->whereMonth('tanggal', $request->bulan);
+        } elseif ($request->filled('tahun')) {
+            $query->whereYear('tanggal', $request->tahun);
+        }
+
+        $gajis = $query->paginate(10);
+
         return view('gaji.index', compact('gajis'));
     }
 
     public function create()
     {
-        $pegawais = Pegawai::all(); // Ambil semua data pegawai
+        $pegawais = Pegawai::all();
         return view('gaji.create', compact('pegawais'));
     }
 
@@ -30,7 +43,6 @@ class GajiController extends Controller
             'tunjangan'   => 'nullable|integer',
             'potongan'    => 'nullable|integer',
             'tanggal'     => 'required|date',
-            'bulan'       => 'required|string',
             'keterangan'  => 'nullable|string',
         ]);
 
@@ -45,7 +57,6 @@ class GajiController extends Controller
             'potongan'    => $request->potongan ?? 0,
             'total_gaji'  => $totalGaji,
             'tanggal'     => $request->tanggal,
-            'bulan'       => $request->bulan,
             'keterangan'  => $request->keterangan,
         ]);
 
@@ -69,6 +80,7 @@ class GajiController extends Controller
             'tunjangan'  => 'nullable|integer',
             'potongan'   => 'nullable|integer',
             'keterangan' => 'nullable|string',
+            'tanggal'    => 'required|date',
         ]);
 
         $totalGaji = $request->gaji_pokok
@@ -81,6 +93,7 @@ class GajiController extends Controller
             'tunjangan'  => $request->tunjangan ?? 0,
             'potongan'   => $request->potongan ?? 0,
             'total_gaji' => $totalGaji,
+            'tanggal'    => $request->tanggal,
             'keterangan' => $request->keterangan,
         ]);
 
@@ -92,5 +105,11 @@ class GajiController extends Controller
     {
         $gaji->delete();
         return redirect()->route('gaji.index')->with('success', 'Gaji berhasil dihapus.');
+    }
+
+    public function show($id)
+    {
+        $gaji = Gaji::findOrFail($id);
+        return view('gaji.show', compact('gaji'));
     }
 }

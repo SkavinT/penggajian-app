@@ -2,10 +2,12 @@
 
 @section('content')
     <h1>Data Pegawai</h1>
-
-    @if(Auth::user()->role === 'A')
-        <a href="{{ route('pegawai.create') }}" class="btn btn-primary mb-3">Tambah Pegawai</a>
-    @endif
+    {{-- Debug --}}
+    @can('create', App\Models\Pegawai::class)
+        <div class="mb-3">
+            <a href="{{ route('pegawai.create') }}" class="btn btn-primary">Tambah Data Pegawai</a>
+        </div>
+    @endcan
 
     <div class="table-responsive">
         <table class="table table-bordered table-striped align-middle">
@@ -33,11 +35,11 @@
                     <td>{{ number_format($pegawai->gaji_pokok, 0, ',', '.') }}</td>
                     <td>{{ $pegawai->alamat }}</td>
                     <td>{{ $pegawai->telepon }}</td>
+                    @can('update', $pegawai)
                     <td>
-                        @if(Auth::user()->role === 'A')
-                            <a href="{{ route('pegawai.edit', $pegawai->id) }}" class="btn btn-warning btn-sm">Edit</a>
-                        @endif
+                        <a href="{{ route('pegawai.edit', $pegawai->id) }}" class="btn btn-primary btn-sm">Edit</a>
                     </td>
+                    @endcan
                 </tr>
                 @endforeach
             </tbody>

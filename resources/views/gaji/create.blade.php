@@ -60,15 +60,6 @@
       @error('tanggal')<div class="invalid-feedback">{{ $message }}</div>@enderror
     </div>
 
-    {{-- Bulan --}}
-    <div class="form-group mb-3">
-      <label for="bulan">Bulan</label>
-      <input id="bulan" name="bulan" type="month"
-             class="form-control @error('bulan') is-invalid @enderror"
-             value="{{ old('bulan') }}" required>
-      @error('bulan')<div class="invalid-feedback">{{ $message }}</div>@enderror
-    </div>
-
     {{-- Keterangan --}}
     <div class="form-group mb-3">
       <label for="keterangan">Keterangan</label>

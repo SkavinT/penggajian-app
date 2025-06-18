@@ -4,11 +4,22 @@ namespace App\Http\Controllers;
 
 use App\Models\Pegawai;
 use App\Models\Gaji;
+use Illuminate\Http\Request;
 
 class DashboardController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
+        $user = $request->user();
+
+        if ($user->can('isAdmin', $user)) {
+            // Tampilkan dashboard admin
+        }
+
+        if ($user->can('isKaryawan', $user)) {
+            // Tampilkan dashboard karyawan
+        }
+
         // $jumlahPegawai = Pegawai::count(); // Hitung jumlah pegawai
         $totalGaji = Gaji::sum('total_gaji'); // Hitung total gaji
         $totalTunjangan = Gaji::sum('tunjangan'); // Hitung total tunjangan

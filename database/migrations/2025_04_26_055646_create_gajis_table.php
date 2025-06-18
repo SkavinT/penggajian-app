@@ -20,7 +20,6 @@ return new class extends Migration
             $table->integer('tunjangan')->nullable();
             $table->integer('total_gaji');
             $table->date('tanggal');
-            $table->string('bulan', 20);
             $table->timestamps();
 
         });
