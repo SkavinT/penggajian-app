@@ -12,15 +12,20 @@ class GajiController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Gaji::with('pegawai');
+        $query = \App\Models\Gaji::with('pegawai');
 
-        // Filter berdasarkan bulan dan tahun dari kolom tanggal
-        if ($request->filled('bulan') && $request->filled('tahun')) {
-            $query->whereMonth('tanggal', $request->bulan)
-                  ->whereYear('tanggal', $request->tahun);
-        } elseif ($request->filled('bulan')) {
+        // Filter nama pegawai
+        if ($request->filled('nama_pegawai')) {
+            $query->whereHas('pegawai', function($q) use ($request) {
+                $q->where('nama', 'like', '%' . $request->nama_pegawai . '%');
+            });
+        }
+
+        // Filter bulan dan tahun
+        if ($request->filled('bulan')) {
             $query->whereMonth('tanggal', $request->bulan);
-        } elseif ($request->filled('tahun')) {
+        }
+        if ($request->filled('tahun')) {
             $query->whereYear('tanggal', $request->tahun);
         }
 
@@ -111,5 +116,70 @@ class GajiController extends Controller
     {
         $gaji = Gaji::findOrFail($id);
         return view('gaji.show', compact('gaji'));
+    }
+
+    public function exportCsv()
+    {
+        $filename = 'data_gaji.csv';
+        $gajis = \App\Models\Gaji::with('pegawai')->get();
+
+        $headers = [
+            "Content-type"        => "text/csv",
+            "Content-Disposition" => "attachment; filename=$filename",
+            "Pragma"              => "no-cache",
+            "Cache-Control"       => "must-revalidate, post-check=0, pre-check=0",
+            "Expires"             => "0"
+        ];
+
+        $callback = function() use ($gajis) {
+            $handle = fopen('php://output', 'w');
+            fputcsv($handle, ['No', 'Nama Pegawai', 'Gaji Pokok', 'Tunjangan', 'Potongan', 'Total Gaji', 'Tanggal', 'Keterangan']);
+            foreach ($gajis as $i => $gaji) {
+                fputcsv($handle, [
+                    $i+1,
+                    $gaji->pegawai->nama ?? '',
+                    $gaji->gaji_pokok,
+                    $gaji->tunjangan,
+                    $gaji->potongan,
+                    $gaji->total_gaji,
+                    $gaji->tanggal,
+                    $gaji->keterangan
+                ]);
+            }
+            fclose($handle);
+        };
+
+        return response()->stream($callback, 200, $headers);
+    }
+
+    public function importCsv(Request $request)
+    {
+        $request->validate([
+            'csv_file' => 'required|file|mimes:csv,txt',
+        ]);
+
+        $file = $request->file('csv_file');
+        $handle = fopen($file->getRealPath(), 'r');
+        $header = fgetcsv($handle); // skip header
+
+        while (($row = fgetcsv($handle)) !== false) {
+            // Contoh urutan kolom: No, Nama Pegawai, Gaji Pokok, Tunjangan, Potongan, Total Gaji, Tanggal, Keterangan
+            // Anda bisa sesuaikan index kolom sesuai file CSV Anda
+            $pegawai = \App\Models\Pegawai::where('nama', $row[1])->first();
+            if ($pegawai) {
+                \App\Models\Gaji::create([
+                    'pegawai_id' => $pegawai->id,
+                    'gaji_pokok' => $row[2],
+                    'tunjangan'  => $row[3],
+                    'potongan'   => $row[4],
+                    'total_gaji' => $row[5],
+                    'tanggal'    => $row[6],
+                    'keterangan' => $row[7] ?? null,
+                ]);
+            }
+        }
+        fclose($handle);
+
+        return redirect()->route('gaji.index')->with('success', 'Import CSV berhasil!');
     }
 }

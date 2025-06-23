@@ -8,6 +8,9 @@
     <!-- Filter Bulan dan Tahun -->
     <form method="GET" action="{{ route('gaji.index') }}" class="row g-3 mb-4">
         <div class="col-auto">
+            <input type="text" name="nama_pegawai" class="form-control" placeholder="Cari Nama Pegawai" value="{{ request('nama_pegawai') }}">
+        </div>
+        <div class="col-auto">
             <select name="bulan" class="form-select">
                 <option value="">-- Pilih Bulan --</option>
                 @foreach(['01'=>'Januari','02'=>'Februari','03'=>'Maret','04'=>'April','05'=>'Mei','06'=>'Juni','07'=>'Juli','08'=>'Agustus','09'=>'September','10'=>'Oktober','11'=>'November','12'=>'Desember'] as $num => $nama)
@@ -33,6 +36,20 @@
         @can('create', App\Models\Gaji::class)
             <a href="{{ route('gaji.create') }}" class="btn btn-primary">Tambah Data Gaji</a>
         @endcan
+    </div>
+
+    <!-- Tombol Export dan Import CSV Modern -->
+    <div class="d-flex justify-content-end align-items-center gap-2 mb-3">
+        <a href="{{ route('gaji.export.csv') }}" class="btn btn-success d-flex align-items-center">
+            <i class="bi bi-file-earmark-arrow-down me-1"></i> Export CSV
+        </a>
+        <form action="{{ route('gaji.import.csv') }}" method="POST" enctype="multipart/form-data" class="d-flex align-items-center gap-2">
+            @csrf
+            <label for="import-csv" class="btn btn-outline-primary btn-sm mb-0 d-flex align-items-center" style="cursor:pointer;">
+                <i class="bi bi-file-earmark-arrow-up me-1"></i> Import CSV
+                <input id="import-csv" type="file" name="csv_file" accept=".csv" required class="d-none" onchange="this.form.submit()">
+            </label>
+        </form>
     </div>
 
     <!-- Tabel Menampilkan Data Gaji Responsive -->
