@@ -62,9 +62,8 @@
                     <th>Gaji Pokok</th>
                     <th>Tunjangan</th>
                     <th>Potongan</th>
-                    <th>Total Gaji</th>
+                    <th>Bulan</th>
                     <th>Keterangan</th>
-                    <th>Tanggal</th>
                     <th>Edit</th>
                 </tr>
             </thead>
@@ -76,9 +75,8 @@
                     <td>{{ number_format($gaji->gaji_pokok, 0, ',', '.') }}</td>
                     <td>{{ number_format($gaji->tunjangan ?? 0, 0, ',', '.') }}</td>
                     <td>{{ number_format($gaji->potongan ?? 0, 0, ',', '.') }}</td>
-                    <td>{{ number_format($gaji->total_gaji, 0, ',', '.') }}</td>
+                    <td>{{ $gaji->bulan }}</td>
                     <td>{{ $gaji->keterangan ?? '-' }}</td>
-                    <td>{{ \Carbon\Carbon::parse($gaji->tanggal)->format('d-m-Y') }}</td>
                     <td>
                         @can('update', $gaji)
                             <a href="{{ route('gaji.edit', $gaji->id) }}" class="btn btn-warning btn-sm">Edit</a>

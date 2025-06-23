@@ -51,13 +51,12 @@
       @error('potongan')<div class="invalid-feedback">{{ $message }}</div>@enderror
     </div>
 
-    {{-- Tanggal --}}
+
+    {{-- Bulan --}}
     <div class="form-group mb-3">
-      <label for="tanggal">Tanggal</label>
-      <input id="tanggal" name="tanggal" type="date"
-             class="form-control @error('tanggal') is-invalid @enderror"
-             value="{{ old('tanggal') }}" required>
-      @error('tanggal')<div class="invalid-feedback">{{ $message }}</div>@enderror
+      <label for="bulan">Bulan</label>
+      <input type="month" name="bulan" class="form-control"
+             value="{{ old('bulan', $gaji->bulan ?? '') }}" required>
     </div>
 
     {{-- Keterangan --}}

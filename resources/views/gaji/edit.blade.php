@@ -53,15 +53,6 @@
       @error('potongan')<div class="invalid-feedback">{{ $message }}</div>@enderror
     </div>
 
-    {{-- Tanggal --}}
-    <div class="form-group mb-3">
-      <label for="tanggal">Tanggal</label>
-      <input id="tanggal" name="tanggal" type="date"
-             class="form-control @error('tanggal') is-invalid @enderror"
-             value="{{ old('tanggal', $gaji->tanggal) }}" required>
-      @error('tanggal')<div class="invalid-feedback">{{ $message }}</div>@enderror
-    </div>
-
     {{-- Bulan --}}
     <div class="form-group mb-3">
       <label for="bulan">Bulan</label>

@@ -15,13 +15,17 @@ class Gaji extends Model
         'tunjangan',
         'potongan',
         'total_gaji',
-        'tanggal',
+        'bulan', // ubah dari 'tanggal'
         'keterangan',
+    ];
+
+    protected $casts = [
+        'bulan' => 'date:Y-m', // Ensure the 'bulan' column is cast to the correct format
     ];
 
     public function pegawai()
     {
-        return $this->belongsTo(Pegawai::class, 'pegawai_id');
+        return $this->belongsTo(Pegawai::class);
     }
 
     public function potongan()

@@ -12,7 +12,7 @@ class GajiController extends Controller
 {
     public function index(Request $request)
     {
-        $query = \App\Models\Gaji::with('pegawai');
+        $query = Gaji::with('pegawai');
 
         // Filter nama pegawai
         if ($request->filled('nama_pegawai')) {
@@ -23,10 +23,10 @@ class GajiController extends Controller
 
         // Filter bulan dan tahun
         if ($request->filled('bulan')) {
-            $query->whereMonth('tanggal', $request->bulan);
+            $query->whereRaw('SUBSTRING(bulan, 6, 2) = ?', [$request->bulan]);
         }
         if ($request->filled('tahun')) {
-            $query->whereYear('tanggal', $request->tahun);
+            $query->whereRaw('LEFT(bulan, 4) = ?', [$request->tahun]);
         }
 
         $gajis = $query->paginate(10);
@@ -42,31 +42,29 @@ class GajiController extends Controller
 
     public function store(Request $request)
     {
+        $request->merge([
+            'gaji_pokok' => str_replace('.', '', $request->gaji_pokok),
+            'tunjangan' => str_replace('.', '', $request->tunjangan),
+            'potongan' => str_replace('.', '', $request->potongan),
+        ]);
+
         $request->validate([
-            'pegawai_id' => 'required|exists:pegawais,id',
-            'gaji_pokok' => 'required|integer',
-            'tunjangan'   => 'nullable|integer',
-            'potongan'    => 'nullable|integer',
-            'tanggal'     => 'required|date',
-            'keterangan'  => 'nullable|string',
+            'pegawai_id' => 'required',
+            'gaji_pokok' => 'required|numeric',
+            'tunjangan' => 'nullable|numeric',
+            'potongan' => 'nullable|numeric',
+            'bulan' => 'required|date_format:Y-m',
+            'keterangan' => 'nullable|string',
         ]);
 
-        $totalGaji = $request->gaji_pokok
-            + ($request->tunjangan ?? 0)
-            - ($request->potongan ?? 0);
+        $total_gaji = ($request->gaji_pokok ?? 0) + ($request->tunjangan ?? 0) - ($request->potongan ?? 0);
 
-        Gaji::create([
-            'pegawai_id'  => $request->pegawai_id,
-            'gaji_pokok'  => $request->gaji_pokok,
-            'tunjangan'   => $request->tunjangan ?? 0,
-            'potongan'    => $request->potongan ?? 0,
-            'total_gaji'  => $totalGaji,
-            'tanggal'     => $request->tanggal,
-            'keterangan'  => $request->keterangan,
-        ]);
+        $data = $request->all();
+        $data['total_gaji'] = $total_gaji;
 
-        return redirect()->route('gaji.index')
-                         ->with('success', 'Data gaji berhasil ditambahkan.');
+        Gaji::create($data);
+
+        return redirect()->route('gaji.index')->with('success', 'Data gaji berhasil ditambahkan.');
     }
 
     public function edit(Gaji $gaji)
@@ -79,31 +77,29 @@ class GajiController extends Controller
 
     public function update(Request $request, Gaji $gaji)
     {
+        $request->merge([
+            'gaji_pokok' => str_replace('.', '', $request->gaji_pokok),
+            'tunjangan' => str_replace('.', '', $request->tunjangan),
+            'potongan' => str_replace('.', '', $request->potongan),
+        ]);
+
         $request->validate([
-            'pegawai_id' => 'required|exists:pegawais,id',
-            'gaji_pokok' => 'required|integer',
-            'tunjangan'  => 'nullable|integer',
-            'potongan'   => 'nullable|integer',
+            'pegawai_id' => 'required',
+            'gaji_pokok' => 'required|numeric',
+            'tunjangan' => 'nullable|numeric',
+            'potongan' => 'nullable|numeric',
+            'bulan' => 'required|date_format:Y-m',
             'keterangan' => 'nullable|string',
-            'tanggal'    => 'required|date',
         ]);
 
-        $totalGaji = $request->gaji_pokok
-            + ($request->tunjangan ?? 0)
-            - ($request->potongan ?? 0);
+        $total_gaji = ($request->gaji_pokok ?? 0) + ($request->tunjangan ?? 0) - ($request->potongan ?? 0);
 
-        $gaji->update([
-            'pegawai_id' => $request->pegawai_id,
-            'gaji_pokok' => $request->gaji_pokok,
-            'tunjangan'  => $request->tunjangan ?? 0,
-            'potongan'   => $request->potongan ?? 0,
-            'total_gaji' => $totalGaji,
-            'tanggal'    => $request->tanggal,
-            'keterangan' => $request->keterangan,
-        ]);
+        $data = $request->all();
+        $data['total_gaji'] = $total_gaji;
 
-        return redirect()->route('gaji.index')
-                         ->with('success', 'Data gaji berhasil diperbarui.');
+        $gaji->update($data);
+
+        return redirect()->route('gaji.index')->with('success', 'Data gaji berhasil diupdate.');
     }
 
     public function destroy(Gaji $gaji)
@@ -142,7 +138,7 @@ class GajiController extends Controller
                     $gaji->tunjangan,
                     $gaji->potongan,
                     $gaji->total_gaji,
-                    $gaji->tanggal,
+                    $gaji->bulan->format('Y-m'),
                     $gaji->keterangan
                 ]);
             }
@@ -173,7 +169,7 @@ class GajiController extends Controller
                     'tunjangan'  => $row[3],
                     'potongan'   => $row[4],
                     'total_gaji' => $row[5],
-                    'tanggal'    => $row[6],
+                    'bulan'    => $row[6],
                     'keterangan' => $row[7] ?? null,
                 ]);
             }
