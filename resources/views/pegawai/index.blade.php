@@ -3,41 +3,32 @@
 @section('content')
 <h1>Data Pegawai</h1>
 
-<div class="d-flex mb-3">
-  {{-- Tombol Tambah --}}
-  @can('create', App\Models\Pegawai::class)
-    <a href="{{ route('pegawai.create') }}" 
-       class="btn btn-primary me-2">
-      Tambah Pegawai
-    </a>
-  @endcan
-
-  {{-- Tombol Export CSV --}}
-  @can('export', App\Models\Pegawai::class)
-    <a href="{{ route('pegawai.export.csv') }}" 
-       class="btn btn-success me-2">
-      Export CSV
-    </a>
-  @endcan
-
-  {{-- Form Import CSV --}}
-  @can('import', App\Models\Pegawai::class)
-    <form action="{{ route('pegawai.import.csv') }}"
-          method="POST"
-          enctype="multipart/form-data"
-          class="d-flex">
-      @csrf
-      <input type="file"
+{{-- Tombol Export & Import CSV Modern --}}
+<div class="d-flex justify-content-end align-items-center gap-2 mb-3">
+  <a href="{{ route('pegawai.export.csv') }}"
+     class="btn btn-success d-flex align-items-center">
+    <i class="bi bi-file-earmark-arrow-down me-1"></i>
+    Export CSV
+  </a>
+  <form action="{{ route('pegawai.import.csv') }}"
+        method="POST"
+        enctype="multipart/form-data"
+        class="d-flex align-items-center gap-2">
+    @csrf
+    <label for="import-pegawai-csv"
+           class="btn btn-outline-primary btn-sm mb-0 d-flex align-items-center"
+           style="cursor:pointer;">
+      <i class="bi bi-file-earmark-arrow-up me-1"></i>
+      Import CSV
+      <input id="import-pegawai-csv"
+             type="file"
              name="file"
              accept=".csv"
-             class="form-control me-2"
-             required>
-      <button type="submit"
-              class="btn btn-primary">
-        Import CSV
-      </button>
-    </form>
-  @endcan
+             required
+             class="d-none"
+             onchange="this.form.submit()">
+    </label>
+  </form>
 </div>
 
 <div class="table-responsive">
@@ -64,17 +55,6 @@
           @can('update', $pegawai)
             <a href="{{ route('pegawai.edit', $pegawai) }}"
                class="btn btn-sm btn-primary">Edit</a>
-          @endcan
-          @can('delete', $pegawai)
-            <form action="{{ route('pegawai.destroy', $pegawai) }}"
-                  method="POST" class="d-inline">
-              @csrf @method('DELETE')
-              <button type="submit"
-                      class="btn btn-sm btn-danger"
-                      onclick="return confirm('Yakin hapus?')">
-                Hapus
-              </button>
-            </form>
           @endcan
         </td>
       </tr>
