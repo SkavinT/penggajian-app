@@ -42,8 +42,8 @@ class DashboardController extends Controller
                               ->get();
 
         // 2) Data chart: pengeluaran gaji per bulan
-        $gajiPerBulan = Gaji::selectRaw("DATE_FORMAT(created_at,'%Y-%m') as bulan, SUM(total_gaji) as total")
-            ->groupByRaw("DATE_FORMAT(created_at,'%Y-%m')")
+        $gajiPerBulan = Gaji::selectRaw("bulan as bulan, SUM(total_gaji) as total")
+            ->groupBy('bulan')
             ->orderBy('bulan')
             ->pluck('total','bulan')
             ->toArray();
