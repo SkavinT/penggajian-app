@@ -14,19 +14,11 @@ class GajiController extends Controller
     {
         $query = Gaji::with('pegawai');
 
-        // Filter nama pegawai
-        if ($request->filled('nama_pegawai')) {
+        // Filter berdasarkan nama pegawai jika ada parameter 'nama'
+        if ($request->filled('nama')) {
             $query->whereHas('pegawai', function($q) use ($request) {
-                $q->where('nama', 'like', '%' . $request->nama_pegawai . '%');
+                $q->where('nama', 'like', '%' . $request->nama . '%');
             });
-        }
-
-        // Filter bulan dan tahun
-        if ($request->filled('bulan')) {
-            $query->whereRaw('SUBSTRING(bulan, 6, 2) = ?', [$request->bulan]);
-        }
-        if ($request->filled('tahun')) {
-            $query->whereRaw('LEFT(bulan, 4) = ?', [$request->tahun]);
         }
 
         $gajis = $query->paginate(10);

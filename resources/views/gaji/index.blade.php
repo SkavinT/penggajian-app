@@ -94,5 +94,11 @@
 
     {{ $gajis->withQueryString()->links() }}
 
+    @if(request('nama'))
+      <div class="alert alert-info">
+        Menampilkan data gaji untuk: <b>{{ request('nama') }}</b>
+      </div>
+    @endif
+
 </div>
 @endsection

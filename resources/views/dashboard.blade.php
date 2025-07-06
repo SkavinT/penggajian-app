@@ -42,8 +42,8 @@
     </div>
   </div>
 
-  <!-- Total Gaji Bulan Ini (khusus admin) -->
   @if(auth()->user() && auth()->user()->role === 'a')
+    <!-- Total Gaji Bulan Ini (admin saja) -->
     <div class="col-xl-3 col-md-6 mb-4">
       <div class="card border-left-success shadow h-100 py-2">
         <div class="card-body d-flex align-items-center justify-content-between">
@@ -59,10 +59,7 @@
         </div>
       </div>
     </div>
-  @endif
-
-  <!-- Total Pengeluaran Gaji Keseluruhan (khusus admin) -->
-  @if(auth()->user() && auth()->user()->role === 'a')
+    <!-- Total Pengeluaran Gaji Keseluruhan (admin saja) -->
     <div class="col-xl-3 col-md-6 mb-4">
       <div class="card border-left-danger shadow h-100 py-2">
         <div class="card-body d-flex align-items-center justify-content-between">
@@ -78,14 +75,65 @@
         </div>
       </div>
     </div>
+  @else
+    <!-- Kartu Info 1 untuk user biasa -->
+    <div class="col-xl-3 col-md-6 mb-4">
+      <div class="card border-left-info shadow h-100 py-2">
+        <div class="card-body d-flex align-items-center justify-content-between">
+          <div>
+            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+              Selamat Datang
+            </div>
+            <div class="h5 mb-0 font-weight-bold text-gray-800">
+              {{ auth()->user()->name }}
+            </div>
+          </div>
+          <i class="fas fa-user fa-2x text-gray-300"></i>
+        </div>
+      </div>
+    </div>
+    <!-- Kartu Info 2 untuk user biasa -->
+    <div class="col-xl-3 col-md-6 mb-4">
+      <div class="card border-left-secondary shadow h-100 py-2">
+        <div class="card-body d-flex align-items-center justify-content-between">
+          <div>
+            <div class="text-xs font-weight-bold text-secondary text-uppercase mb-1">
+              Info Sistem
+            </div>
+            <div class="h6 mb-0 font-weight-bold text-gray-800">
+              Hubungi admin jika ada kendala data.
+            </div>
+          </div>
+          <i class="fas fa-info-circle fa-2x text-gray-300"></i>
+        </div>
+      </div>
+    </div>
   @endif
+</div>
+
+<!-- Cari Total Gaji Pegawai & Redirect ke Tabel Gaji -->
+<div class="row mb-4">
+  <div class="col-lg-6">
+    <div class="card shadow mb-4">
+      <div class="card-header py-3 bg-primary text-white">
+        <strong>Masukan namamu:</strong>
+      </div>
+      <div class="card-body">
+        <form id="form-cari-gaji" action="{{ route('gaji.index') }}" method="GET" class="d-flex gap-2">
+          <input type="text" id="cari-nama" name="nama" class="form-control mb-3" placeholder="Masukkan nama pegawai..." autocomplete="off" required>
+          <button type="submit" class="btn btn-success mb-3">Cari</button>
+        </form>
+        <div id="hasil-gaji" class="alert alert-info d-none"></div>
+      </div>
+    </div>
+  </div>
 </div>
 
 
 <!-- Grafik Gaji Bulan Ini -->
 <div class="row mb-4">
-  <!-- Grafik Gaji Bulan Ini (khusus admin) -->
   @if(auth()->user() && auth()->user()->role === 'a')
+    <!-- Grafik Gaji Bulan Ini (admin saja) -->
     <div class="col-lg-6">
       <div class="card shadow mb-4">
         <div class="card-header py-3">
@@ -97,7 +145,6 @@
       </div>
     </div>
   @endif
-
   <!-- Grafik Total Pegawai (boleh semua user) -->
   <div class="col-lg-6">
     <div class="card shadow mb-4">
@@ -154,6 +201,7 @@
 </div>
 
 
+
 @endsection
 
 @push('scripts')
@@ -203,6 +251,25 @@
         }
       }
     }
+  });
+
+  const pegawaiGaji = @json($pegawaiGaji ?? []);
+  document.getElementById('cari-nama').addEventListener('input', function() {
+      const nama = this.value.trim().toLowerCase();
+      const hasil = document.getElementById('hasil-gaji');
+      if (nama.length < 2) {
+          hasil.classList.add('d-none');
+          hasil.innerHTML = '';
+          return;
+      }
+      const data = pegawaiGaji.find(p => p.nama.toLowerCase() === nama);
+      if (data) {
+          hasil.classList.remove('d-none');
+          hasil.innerHTML = `<b>${data.nama}</b><br>Total Gaji: <span class="text-success">Rp ${parseInt(data.total_gaji).toLocaleString('id-ID')}</span>`;
+      } else {
+          hasil.classList.remove('d-none');
+          hasil.innerHTML = 'Nama tidak ditemukan.';
+      }
   });
 </script>
 @endpush

@@ -66,37 +66,25 @@
         </a>
     </li>
 
-    <!-- Gaji Link -->
+    <!-- Gaji Link (khusus admin) -->
+    @if(auth()->user() && auth()->user()->role === 'a')
     <li class="nav-item">
         <a class="nav-link {{ request()->routeIs('gaji.*') ? 'active' : '' }}" href="{{ route('gaji.index') }}">
             <i class="fas fa-money-bill-wave"></i>
             Gaji
         </a>
     </li>
+    @endif
 
-    <!-- Pegawai Link -->
+    <!-- Pegawai Link (khusus admin) -->
+    @if(auth()->user() && auth()->user()->role === 'a')
     <li class="nav-item">
         <a class="nav-link {{ request()->routeIs('pegawai.*') ? 'active' : '' }}" href="{{ route('pegawai.index') }}">
             <i class="fas fa-users"></i>
             Pegawai
         </a>
     </li>
-{{-- 
-    <!-- Potongan Keterlambatan Link -->
-    <li class="nav-item">
-        <a class="nav-link {{ request()->routeIs('potongan.*') ? 'active' : '' }}" href="{{ route('potongan.index') }}">
-            <i class="fas fa-clock"></i>
-            Potongan Keterlambatan
-        </a>
-    </li> --}}
-{{-- 
-    <!-- Tunjangan Link -->
-    <li class="nav-item">
-        <a class="nav-link {{ request()->routeIs('tunjangan.*') ? 'active' : '' }}" href="{{ route('tunjangan.index') }}">
-            <i class="fas fa-hand-holding-usd"></i>
-            Tunjangan
-        </a>
-    </li> --}}
+    @endif
 
     <hr class="sidebar-divider">
 

@@ -11,6 +11,16 @@ class DashboardController extends Controller
 {
     public function index(Request $request)
     {
+        $query = Gaji::with('pegawai');
+
+        if ($request->filled('nama')) {
+            $query->whereHas('pegawai', function($q) use ($request) {
+                $q->where('nama', 'like', '%' . $request->nama . '%');
+            });
+        }
+
+        $gajis = $query->paginate(10);
+
         // 1) Ringkasan singkat
         $totalPegawai = Pegawai::count();
         // dulu: pakai kolom `bulan` yang tidak ada
@@ -56,6 +66,15 @@ class DashboardController extends Controller
             $pegawaiValues[] = $pegawaiPerBulan[$key] ?? 0;
         }
 
+        $pegawaiGaji = Pegawai::with(['gajis' => function($q) {
+            $q->orderByDesc('bulan');
+        }])->get()->map(function($p) {
+            return [
+                'nama' => $p->nama,
+                'total_gaji' => optional($p->gajis->first())->total_gaji ?? 0
+            ];
+        })->values();
+
         return view('dashboard', compact(
             'totalPegawai',
             'totalGajiBulanIni',
@@ -65,6 +84,6 @@ class DashboardController extends Controller
             'labels',
             'gajiValues',
             'pegawaiValues'
-        ));
+        ))->with('pegawaiGaji', $pegawaiGaji);
     }
 }
