@@ -64,6 +64,7 @@
                     <th>Potongan</th>
                     <th>Bulan</th>
                     <th>Keterangan</th>
+                    <th>Total Gaji</th>   {{-- Tambahkan ini --}}
                     <th>Edit</th>
                 </tr>
             </thead>
@@ -77,6 +78,7 @@
                     <td>{{ number_format($gaji->potongan ?? 0, 0, ',', '.') }}</td>
                     <td>{{ substr($gaji->bulan, 0, 7) }}</td>
                     <td>{{ $gaji->keterangan ?? '-' }}</td>
+                    <td>{{ number_format($gaji->total_gaji, 0, ',', '.') }}</td> {{-- Tambahkan ini --}}
                     <td>
                         @can('update', $gaji)
                             <a href="{{ route('gaji.edit', $gaji->id) }}" class="btn btn-warning btn-sm">Edit</a>
