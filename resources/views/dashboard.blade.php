@@ -288,3 +288,5 @@ if (data) {
 }
 </script>
 @endpush
+
+<div id="main-content" class="container-fluid" style="max-width: 1800px; margin-left:100px; padding: 3px;">

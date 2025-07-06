@@ -16,9 +16,9 @@
                 @include('layouts.topbar')
 
                 <!-- Begin Page Content -->
-                <main class="container-fluid py-4">
+                <div id="main-content" style="margin-left:220px; transition:margin-left 0.3s;">
                     @yield('content')
-                </main>
+                </div>
                 <!-- End Page Content -->
             </div>
             {{-- Footer --}}

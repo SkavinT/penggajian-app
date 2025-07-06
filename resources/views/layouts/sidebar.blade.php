@@ -6,6 +6,12 @@
         min-height: 100vh;
         font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
         box-shadow: 2px 0 12px rgba(44,62,80,0.10);
+        transition: margin-left 0.3s;
+        width: 220px;
+        position: fixed;
+        z-index: 1045;
+        left: 0;
+        top: 0;
     }
     .sidebar-modern .sidebar-brand-text {
         font-size: 1.1rem;
@@ -48,8 +54,49 @@
         padding-bottom: 1.5rem;
         text-align: center;
     }
+    .sidebar-collapsed {
+        margin-left: -220px !important;
+    }
+    #sidebar-toggle-btn {
+        position: fixed;
+        top: 18px;
+        left: 18px;
+        z-index: 1050;
+        background: #fff;
+        color: #e1251b;
+        border: none;
+        border-radius: 50%;
+        width: 38px;
+        height: 38px;
+        box-shadow: 0 2px 8px rgba(44,62,80,0.10);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    @media (max-width: 991px) {
+        .sidebar-modern {
+            margin-left: -220px;
+        }
+        .sidebar-modern.sidebar-open {
+            margin-left: 0 !important;
+        }
+        #main-content {
+            margin-left: 0 !important;
+        }
+    }
+    #main-content {
+        margin-left: 220px;
+        transition: margin-left 0.3s;
+    }
+    .sidebar-collapsed ~ #main-content {
+        margin-left: 0 !important;
+    }
 </style>
 
+<!-- Tambahkan overlay -->
+<div id="sidebar-overlay" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.2); z-index:1040;"></div>
+
+<!-- Sidebar -->
 <ul class="navbar-nav sidebar-modern sidebar-dark accordion" id="accordionSidebar">
     <!-- Sidebar - Brand -->
     <a class="sidebar-brand d-flex align-items-center justify-content-center my-4" href="{{ route('dashboard') }}">
@@ -103,4 +150,63 @@
     <hr class="sidebar-divider">
 
 </ul>
+
+<!-- Toggle Button -->
+<button id="sidebar-toggle-btn" type="button" title="Toggle Sidebar">
+    <i class="fas fa-bars"></i>
+</button>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const sidebar = document.querySelector('.sidebar-modern');
+    const mainContent = document.getElementById('main-content');
+    const toggleBtn = document.getElementById('sidebar-toggle-btn');
+    const overlay = document.getElementById('sidebar-overlay');
+
+    function openSidebarMobile() {
+        sidebar.classList.add('sidebar-open');
+        overlay.style.display = 'block';
+    }
+    function closeSidebarMobile() {
+        sidebar.classList.remove('sidebar-open');
+        overlay.style.display = 'none';
+    }
+    function toggleSidebarDesktop() {
+        sidebar.classList.toggle('sidebar-collapsed');
+        if(mainContent) {
+            mainContent.style.marginLeft = sidebar.classList.contains('sidebar-collapsed') ? '0' : '220px';
+        }
+    }
+
+    toggleBtn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        if(window.innerWidth <= 991) {
+            if(sidebar.classList.contains('sidebar-open')) {
+                closeSidebarMobile();
+            } else {
+                openSidebarMobile();
+            }
+        } else {
+            toggleSidebarDesktop();
+        }
+    });
+
+    overlay.addEventListener('click', closeSidebarMobile);
+
+    // Responsive: auto close sidebar on resize to mobile
+    window.addEventListener('resize', function() {
+        if(window.innerWidth > 991) {
+            overlay.style.display = 'none';
+            sidebar.classList.remove('sidebar-open');
+            if(mainContent && !sidebar.classList.contains('sidebar-collapsed')) {
+                mainContent.style.marginLeft = '220px';
+            }
+        } else {
+            if(!sidebar.classList.contains('sidebar-open')) {
+                mainContent.style.marginLeft = '0';
+            }
+        }
+    });
+});
+</script>
 
