@@ -12,22 +12,28 @@ class DashboardController extends Controller
     public function index(Request $request)
     {
         // 1) Ringkasan singkat
-        $totalPegawai      = Pegawai::count();
-        $totalGajiBulanIni = Gaji::where('bulan', date('Y-m'))->sum('total_gaji');
+        $totalPegawai = Pegawai::count();
+        // dulu: pakai kolom `bulan` yang tidak ada
+        // $totalGajiBulanIni = Gaji::where('bulan', date('Y-m'))->sum('total_gaji');
+        // baru: filter berdasarkan created_at bulan & tahun sekarang
+        $totalGajiBulanIni = Gaji::whereMonth('created_at', date('m'))
+                                 ->whereYear('created_at', date('Y'))
+                                 ->sum('total_gaji');
+
         // Tambahkan total pengeluaran keseluruhan
         $totalPengeluaranSemua = Gaji::sum('total_gaji');
 
-        $recentPegawais    = Pegawai::whereMonth('created_at', date('m'))
-                                     ->whereYear('created_at', date('Y'))
-                                     ->get();
-        $lastGajis         = Gaji::with('pegawai')
-                                 ->orderBy('created_at', 'desc')
-                                 ->limit(5)
+        $recentPegawais = Pegawai::whereMonth('created_at', date('m'))
+                                 ->whereYear('created_at', date('Y'))
                                  ->get();
+        $lastGajis      = Gaji::with('pegawai')
+                              ->orderBy('created_at', 'desc')
+                              ->limit(5)
+                              ->get();
 
         // 2) Data chart: pengeluaran gaji per bulan
-        $gajiPerBulan = Gaji::selectRaw("bulan, SUM(total_gaji) as total")
-            ->groupBy('bulan')
+        $gajiPerBulan = Gaji::selectRaw("DATE_FORMAT(created_at,'%Y-%m') as bulan, SUM(total_gaji) as total")
+            ->groupByRaw("DATE_FORMAT(created_at,'%Y-%m')")
             ->orderBy('bulan')
             ->pluck('total','bulan')
             ->toArray();
@@ -53,7 +59,7 @@ class DashboardController extends Controller
         return view('dashboard', compact(
             'totalPegawai',
             'totalGajiBulanIni',
-            'totalPengeluaranSemua',  // <-- baru
+            'totalPengeluaranSemua',
             'recentPegawais',
             'lastGajis',
             'labels',
