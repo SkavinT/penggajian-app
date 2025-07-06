@@ -33,3 +33,9 @@ class Gaji extends Model
         return $this->belongsTo(PotonganKeterlambatan::class, 'potongan_id');
     }
 }
+$data = $request->only([
+  'pegawai_id','potongan_id','gaji_pokok','tunjangan',
+  'potongan','bulan','keterangan'
+]);
+$data['total_gaji'] = $total_gaji;
+Gaji::create($data);
