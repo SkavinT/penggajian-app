@@ -3,13 +3,22 @@
 @section('content')
 <h1>Data Pegawai</h1>
 
-{{-- Tombol Export & Import CSV Modern --}}
 <div class="d-flex justify-content-end align-items-center gap-2 mb-3">
+  {{-- Tombol Tambah Pegawai --}}
+  <a href="{{ route('pegawai.create') }}"
+     class="btn btn-primary d-flex align-items-center me-2">
+    <i class="bi bi-plus-lg me-1"></i>
+    Tambah Pegawai
+  </a>
+
+  {{-- Tombol Export CSV --}}
   <a href="{{ route('pegawai.export.csv') }}"
-     class="btn btn-success d-flex align-items-center">
+     class="btn btn-success d-flex align-items-center me-2">
     <i class="bi bi-file-earmark-arrow-down me-1"></i>
     Export CSV
   </a>
+
+  {{-- Form Import CSV --}}
   <form action="{{ route('pegawai.import.csv') }}"
         method="POST"
         enctype="multipart/form-data"
