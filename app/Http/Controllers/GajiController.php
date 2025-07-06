@@ -6,6 +6,7 @@ use App\Models\Gaji;
 use App\Models\Pegawai;
 use App\Models\Tunjangan;
 use App\Models\PotonganKeterlambatan;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 
 class GajiController extends Controller
@@ -14,11 +15,29 @@ class GajiController extends Controller
     {
         $query = Gaji::with('pegawai');
 
-        // Filter berdasarkan nama pegawai jika ada parameter 'nama'
-        if ($request->filled('nama')) {
-            $query->whereHas('pegawai', function($q) use ($request) {
-                $q->where('nama', 'like', '%' . $request->nama . '%');
+        // Filter nama pegawai hanya untuk admin
+        if (Auth::user()->role === 'a' && $request->filled('nama_pegawai')) {
+            $nama = $request->nama_pegawai;
+            $query->whereHas('pegawai', function($q) use ($nama) {
+                $q->where('nama', 'like', '%' . $nama . '%');
             });
+        }
+
+        // Untuk user biasa, selalu batasi ke namanya sendiri
+        if (Auth::user()->role !== 'a') {
+            $nama = Auth::user()->name;
+            $query->whereHas('pegawai', function($q) use ($nama) {
+                $q->whereRaw('LOWER(nama) = ?', [strtolower($nama)]);
+            });
+        }
+
+        // Filter bulan
+        if ($request->filled('bulan')) {
+            $query->whereRaw("RIGHT(bulan,2) = ?", [$request->bulan]);
+        }
+        // Filter tahun
+        if ($request->filled('tahun')) {
+            $query->whereRaw("LEFT(bulan,4) = ?", [$request->tahun]);
         }
 
         $gajis = $query->paginate(10);

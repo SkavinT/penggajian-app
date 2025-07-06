@@ -7,9 +7,11 @@
 
     <!-- Filter Bulan dan Tahun -->
     <form method="GET" action="{{ route('gaji.index') }}" class="row g-3 mb-4">
+        @if(auth()->user() && auth()->user()->role === 'a')
         <div class="col-auto">
             <input type="text" name="nama_pegawai" class="form-control" placeholder="Cari Nama Pegawai" value="{{ request('nama_pegawai') }}">
         </div>
+        @endif
         <div class="col-auto">
             <select name="bulan" class="form-select">
                 <option value="">-- Pilih Bulan --</option>

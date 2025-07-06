@@ -119,9 +119,11 @@
         <strong>Masukan namamu:</strong>
       </div>
       <div class="card-body">
+        {{-- Ganti form di bawah ini --}}
         <form id="form-cari-gaji" action="{{ route('gaji.index') }}" method="GET" class="d-flex gap-2">
-          <input type="text" id="cari-nama" name="nama" class="form-control mb-3" placeholder="Masukkan nama pegawai..." autocomplete="off" required>
-          <button type="submit" class="btn btn-success mb-3">Cari</button>
+          <input type="text" id="cari-nama" name="nama" class="form-control mb-3" 
+                 value="{{ auth()->user()->name }}" readonly>
+          <button type="submit" class="btn btn-success mb-3">Lihat Gaji Saya</button>
         </form>
         <div id="hasil-gaji" class="alert alert-info d-none"></div>
       </div>
@@ -271,5 +273,18 @@
           hasil.innerHTML = 'Nama tidak ditemukan.';
       }
   });
+</script>
+<script>
+const pegawaiGaji = @json($pegawaiGaji ?? []);
+const namaUser = "{{ auth()->user()->name }}".toLowerCase();
+const hasil = document.getElementById('hasil-gaji');
+const data = pegawaiGaji.find(p => p.nama.toLowerCase() === namaUser);
+if (data) {
+    hasil.classList.remove('d-none');
+    hasil.innerHTML = `<b>${data.nama}</b><br>Total Gaji: <span class="text-success">Rp ${parseInt(data.total_gaji).toLocaleString('id-ID')}</span>`;
+} else {
+    hasil.classList.remove('d-none');
+    hasil.innerHTML = 'Data gaji tidak ditemukan.';
+}
 </script>
 @endpush

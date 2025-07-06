@@ -82,7 +82,7 @@
 <body>
     <div class="container">
         <img src="https://logowik.com/content/uploads/images/pertamina2579.jpg" alt="Logo Pertamina" style="width:140px; margin-bottom: 24px;">
-        <h1>Selamat Datang di<br>Aplikasi Penggajian</h1>
+        <h1>Selamat Datang di<br>Aplikasi Gaji</h1>
         <div class="btn-group">
             <a href="{{ route('login') }}" class="btn-login">Login</a>
             <a href="{{ route('register') }}" class="btn-register">Register</a>

@@ -51,7 +51,7 @@
         <div class="col-md-5">
             <div class="card">
                 <div class="text-center bg-white pt-4">
-                    <h3 class="pertamina-title">APLIKASI PENGGAJIAN</h3>
+                    <h3 class="pertamina-title">APLIKASI GAJI</h3>
                     <div class="subtitle">PT PERTAMINA</div>
                 </div>
                 <div class="card-body p-4">

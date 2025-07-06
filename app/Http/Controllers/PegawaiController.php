@@ -4,9 +4,23 @@ namespace App\Http\Controllers;
 
 use App\Models\Pegawai;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth; // Import Auth facade
+
+use Illuminate\Routing\Controller;
 
 class PegawaiController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth'); // Ensure the user is authenticated
+        $this->middleware(function ($request, $next) {
+            if (Auth::check() && Auth::user()->role !== 'a') { // Check if user is authenticated and has the correct role
+                abort(403, 'Akses hanya untuk admin.');
+            }
+            return $next($request);
+        });
+    }
+
     public function index()
     {
         $pegawais = Pegawai::all(); // Ambil semua data pegawai
