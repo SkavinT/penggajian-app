@@ -42,29 +42,36 @@ class GajiController extends Controller
 
     public function store(Request $request)
     {
+        // format angka
         $request->merge([
             'gaji_pokok' => str_replace('.', '', $request->gaji_pokok),
-            'tunjangan' => str_replace('.', '', $request->tunjangan),
-            'potongan' => str_replace('.', '', $request->potongan),
+            'tunjangan'  => str_replace('.', '', $request->tunjangan),
+            'potongan'   => str_replace('.', '', $request->potongan),
+            // set tanggal hari ini
+            'tanggal'    => now()->format('Y-m-d'),
         ]);
 
         $request->validate([
             'pegawai_id' => 'required',
             'gaji_pokok' => 'required|numeric',
-            'tunjangan' => 'nullable|numeric',
-            'potongan' => 'nullable|numeric',
-            'bulan' => 'required|date_format:Y-m',
+            'tunjangan'  => 'nullable|numeric',
+            'potongan'   => 'nullable|numeric',
+            'bulan'      => 'required|date_format:Y-m',
             'keterangan' => 'nullable|string',
+            'tanggal'    => 'required|date',
         ]);
 
-        $total_gaji = ($request->gaji_pokok ?? 0) + ($request->tunjangan ?? 0) - ($request->potongan ?? 0);
+        $total_gaji = ($request->gaji_pokok ?? 0)
+                    + ($request->tunjangan  ?? 0)
+                    - ($request->potongan   ?? 0);
 
         $data = $request->all();
         $data['total_gaji'] = $total_gaji;
 
         Gaji::create($data);
 
-        return redirect()->route('gaji.index')->with('success', 'Data gaji berhasil ditambahkan.');
+        return redirect()->route('gaji.index')
+                         ->with('success','Data gaji berhasil ditambahkan.');
     }
 
     public function edit(Gaji $gaji)
