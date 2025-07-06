@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-<div id="main-content" class="container-fluid" style="max-width: 1500px; margin-left:170px ; padding: 3px;">
+<div id="main-content" class="container-fluid" style=" margin-left:250px ; padding: 10px;">
   <h1 class="mb-4">Data Pegawai</h1>
 
   <div class="d-flex justify-content-end align-items-center gap-2 mb-3">
