@@ -65,4 +65,52 @@ class PegawaiController extends Controller
         $pegawai = Pegawai::findOrFail($id);
         return view('pegawai.show', compact('pegawai'));
     }
+    public function exportCsv()
+    {
+        $pegawais = Pegawai::all();
+        $csv  = "nip,nama,email,jabatan,gaji_pokok,alamat,telepon\n";
+        foreach ($pegawais as $p) {
+            $csv .= implode(',', [
+                $p->nip,
+                $p->nama,
+                $p->email,
+                $p->jabatan,
+                $p->gaji_pokok,
+                "\"{$p->alamat}\"",
+                $p->telepon,
+            ]) . "\n";
+        }
+        return response($csv, 200, [
+            'Content-Type'        => 'text/csv',
+            'Content-Disposition' => 'attachment; filename=\"pegawai.csv\"',
+        ]);
+    }
+
+    public function importCsv(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|file|mimes:csv,txt',
+        ]);
+        $path = $request->file('file')->getRealPath();
+        if (($handle = fopen($path, 'r')) !== false) {
+            // skip header
+            fgetcsv($handle, 1000, ',');
+
+            while (($row = fgetcsv($handle, 1000, ',')) !== false) {
+                Pegawai::updateOrCreate(
+                    ['nip' => $row[0]],
+                    [
+                        'nama'       => $row[1],
+                        'email'      => $row[2],
+                        'jabatan'    => $row[3],
+                        'gaji_pokok' => $row[4],
+                        'alamat'     => $row[5],
+                        'telepon'    => $row[6],
+                    ]
+                );
+            }
+            fclose($handle);
+        }
+        return back()->with('success','Data pegawai berhasil di‐import.');
+    }
 }

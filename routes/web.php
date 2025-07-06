@@ -22,6 +22,13 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/gaji/export-csv', [GajiController::class, 'exportCsv'])->name('gaji.export.csv');
     Route::post('/gaji/import-csv', [GajiController::class, 'importCsv'])->name('gaji.import.csv');
 
+    Route::get('/pegawai/export-csv', [PegawaiController::class, 'exportCsv'])
+         ->middleware('auth')
+         ->name('pegawai.export.csv');
+    Route::post('/pegawai/import-csv', [PegawaiController::class, 'importCsv'])
+         ->middleware('auth')
+         ->name('pegawai.import.csv');
+
     Route::resource('pegawai', PegawaiController::class);
     Route::resource('gaji', GajiController::class);
     Route::resource('potongan-keterlambatan', PotonganKeterlambatanController::class)->only(['index', 'show']);
