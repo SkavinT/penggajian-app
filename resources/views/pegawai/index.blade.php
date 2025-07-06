@@ -7,7 +7,7 @@
   {{-- Tombol Tambah Pegawai (khusus admin) --}}
   @if(auth()->user() && auth()->user()->role === 'a')
     <a href="{{ route('pegawai.create') }}"
-       class="btn btn-primary d-flex align-items-center me-2">
+       class="btn btn-primary d-flex align-items-center ms-2">
       <i class="bi bi-plus-lg me-1"></i>
       Tambah Pegawai
     </a>

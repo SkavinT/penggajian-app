@@ -42,55 +42,63 @@
     </div>
   </div>
 
-  <!-- Total Gaji Bulan Ini -->
-  <div class="col-xl-3 col-md-6 mb-4">
-    <div class="card border-left-success shadow h-100 py-2">
-      <div class="card-body d-flex align-items-center justify-content-between">
-        <div>
-          <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
-            Total Gaji Bulan Ini
+  <!-- Total Gaji Bulan Ini (khusus admin) -->
+  @if(auth()->user() && auth()->user()->role === 'a')
+    <div class="col-xl-3 col-md-6 mb-4">
+      <div class="card border-left-success shadow h-100 py-2">
+        <div class="card-body d-flex align-items-center justify-content-between">
+          <div>
+            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+              Total Gaji Bulan Ini
+            </div>
+            <div class="h5 mb-0 font-weight-bold text-gray-800">
+              Rp {{ number_format($totalGajiBulanIni,0,',','.') }}
+            </div>
           </div>
-          <div class="h5 mb-0 font-weight-bold text-gray-800">
-            Rp {{ number_format($totalGajiBulanIni,0,',','.') }}
-          </div>
+          <i class="fas fa-wallet fa-2x text-gray-300"></i>
         </div>
-        <i class="fas fa-wallet fa-2x text-gray-300"></i>
       </div>
     </div>
-  </div>
+  @endif
 
-  <!-- Total Pengeluaran Gaji Keseluruhan -->
-  <div class="col-xl-3 col-md-6 mb-4">
-    <div class="card border-left-danger shadow h-100 py-2">
-      <div class="card-body d-flex align-items-center justify-content-between">
-        <div>
-          <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">
-            Total Pengeluaran Gaji Keseluruhan
+  <!-- Total Pengeluaran Gaji Keseluruhan (khusus admin) -->
+  @if(auth()->user() && auth()->user()->role === 'a')
+    <div class="col-xl-3 col-md-6 mb-4">
+      <div class="card border-left-danger shadow h-100 py-2">
+        <div class="card-body d-flex align-items-center justify-content-between">
+          <div>
+            <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">
+              Total Pengeluaran Gaji Keseluruhan
+            </div>
+            <div class="h5 mb-0 font-weight-bold text-gray-800">
+              Rp {{ number_format($totalPengeluaranSemua, 0, ',', '.') }}
+            </div>
           </div>
-          <div class="h5 mb-0 font-weight-bold text-gray-800">
-            Rp {{ number_format($totalPengeluaranSemua, 0, ',', '.') }}
-          </div>
+          <i class="fas fa-money-bill-wave fa-2x text-gray-300"></i>
         </div>
-        <i class="fas fa-money-bill-wave fa-2x text-gray-300"></i>
       </div>
     </div>
-  </div>
+  @endif
 </div>
 
 
 <!-- Grafik Gaji Bulan Ini -->
 <div class="row mb-4">
-  <div class="col-lg-6">
-    <div class="card shadow mb-4">
-      <div class="card-header py-3">
-        <h6 class="m-0 font-weight-bold text-primary">Pengeluaran Gaji Per Bulan</h6>
-      </div>
-      <div class="card-body">
-        <canvas id="gajiChart"></canvas>
+  <!-- Grafik Gaji Bulan Ini (khusus admin) -->
+  @if(auth()->user() && auth()->user()->role === 'a')
+    <div class="col-lg-6">
+      <div class="card shadow mb-4">
+        <div class="card-header py-3">
+          <h6 class="m-0 font-weight-bold text-primary">Pengeluaran Gaji Per Bulan</h6>
+        </div>
+        <div class="card-body">
+          <canvas id="gajiChart"></canvas>
+        </div>
       </div>
     </div>
-  </div>
+  @endif
 
+  <!-- Grafik Total Pegawai (boleh semua user) -->
   <div class="col-lg-6">
     <div class="card shadow mb-4">
       <div class="card-header py-3">
