@@ -19,7 +19,6 @@ return new class extends Migration
             $table->integer('gaji_pokok');
             $table->integer('tunjangan')->nullable();
             $table->integer('total_gaji');
-            $table->date('tanggal');
             $table->timestamps();
 
         });
