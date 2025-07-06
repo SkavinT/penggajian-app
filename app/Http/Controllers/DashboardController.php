@@ -42,17 +42,11 @@ class DashboardController extends Controller
                               ->get();
 
         // 2) Data chart: pengeluaran gaji per bulan
-        $gajiPerBulan = Gaji::selectRaw("LEFT(bulan,7) as bulan, SUM(total_gaji) as total")
-            ->groupBy('bulan')
+        $gajiPerBulan = Gaji::selectRaw("DATE_FORMAT(created_at,'%Y-%m') as bulan, SUM(total_gaji) as total")
+            ->groupByRaw("DATE_FORMAT(created_at,'%Y-%m')")
             ->orderBy('bulan')
-            ->get();
-
-        // Buat array label (bulan) dan value (total gaji)
-        $labels = $gajiPerBulan->pluck('bulan')->map(function($b) {
-            // Format ke nama bulan Indonesia, misal: '2025-08' => 'Aug 2025'
-            return \Carbon\Carbon::createFromFormat('Y-m', $b)->translatedFormat('M Y');
-        });
-        $gajiValues = $gajiPerBulan->pluck('total');
+            ->pluck('total','bulan')
+            ->toArray();
 
         // 3) Data chart: total pegawai per bulan
         $pegawaiPerBulan = Pegawai::selectRaw("DATE_FORMAT(created_at,'%Y-%m') as bulan, COUNT(*) as total")
@@ -63,10 +57,12 @@ class DashboardController extends Controller
 
         // 4) Build labels & values untuk 12 bulan
         $year         = date('Y');
-        $pegawaiValues = [];
+        $labels       = $gajiValues = $pegawaiValues = [];
         for ($m = 1; $m <= 12; $m++) {
             $key = $year . '-' . str_pad($m,2,'0',STR_PAD_LEFT);
             // untuk tampilan X axis: Jan, Feb, dst.
+            $labels[]        = DateTime::createFromFormat('!m', $m)->format('M');
+            $gajiValues[]    = $gajiPerBulan[$key]   ?? 0;
             $pegawaiValues[] = $pegawaiPerBulan[$key] ?? 0;
         }
 
