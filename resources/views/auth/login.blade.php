@@ -83,9 +83,6 @@
                             <label class="form-check-label" for="remember">Ingat Saya</label>
                         </div>
                         <button type="submit" class="btn btn-pertamina btn-block mt-4">Login</button>
-                        <div class="text-center mt-3">
-                            <a href="{{ route('password.request') }}" style="color:#e1251b;">Lupa Password?</a>
-                        </div>
                     </form>
                 </div>
             </div>
