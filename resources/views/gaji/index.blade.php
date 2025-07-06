@@ -31,11 +31,11 @@
         </div>
     </form>
 
-    <!-- Tombol Tambah Data Gaji -->
+    <!-- Tombol Tambah Data Gaji (khusus admin) -->
     <div class="mb-3">
-        @can('create', App\Models\Gaji::class)
+        @if(auth()->user() && auth()->user()->role === 'a')
             <a href="{{ route('gaji.create') }}" class="btn btn-primary">Tambah Data Gaji</a>
-        @endcan
+        @endif
     </div>
 
     <!-- Tombol Export dan Import CSV Modern -->
@@ -43,6 +43,7 @@
         <a href="{{ route('gaji.export.csv') }}" class="btn btn-success d-flex align-items-center">
             <i class="bi bi-file-earmark-arrow-down me-1"></i> Export CSV
         </a>
+        @if(auth()->user() && auth()->user()->role === 'a')
         <form action="{{ route('gaji.import.csv') }}" method="POST" enctype="multipart/form-data" class="d-flex align-items-center gap-2">
             @csrf
             <label for="import-csv" class="btn btn-outline-primary btn-sm mb-0 d-flex align-items-center" style="cursor:pointer;">
@@ -50,6 +51,7 @@
                 <input id="import-csv" type="file" name="csv_file" accept=".csv" required class="d-none" onchange="this.form.submit()">
             </label>
         </form>
+        @endif
     </div>
 
     <!-- Tabel Menampilkan Data Gaji Responsive -->
