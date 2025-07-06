@@ -12,7 +12,12 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->string('role')->default('T'); // 'A' untuk admin, 'T' untuk tamu
+            // jika kolom belum ada, tambahkan
+            if (! Schema::hasColumn('users','role')) {
+                $table->string('role')->default('user')->after('password');
+            }
+            // jika ingin ubah panjang/tipe, gunakan change()
+            // $table->string('role',50)->change();
         });
     }
 
@@ -22,7 +27,10 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            //
+            // hanya drop kalau kolom benar-benar ada
+            if (Schema::hasColumn('users','role')) {
+                $table->dropColumn('role');
+            }
         });
     }
 };

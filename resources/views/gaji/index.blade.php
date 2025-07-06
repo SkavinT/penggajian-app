@@ -75,7 +75,7 @@
                     <td>{{ number_format($gaji->gaji_pokok, 0, ',', '.') }}</td>
                     <td>{{ number_format($gaji->tunjangan ?? 0, 0, ',', '.') }}</td>
                     <td>{{ number_format($gaji->potongan ?? 0, 0, ',', '.') }}</td>
-                    <td>{{ $gaji->bulan }}</td>
+                    <td>{{ substr($gaji->bulan, 0, 7) }}</td>
                     <td>{{ $gaji->keterangan ?? '-' }}</td>
                     <td>
                         @can('update', $gaji)

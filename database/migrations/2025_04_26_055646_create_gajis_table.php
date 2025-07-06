@@ -18,9 +18,11 @@ return new class extends Migration
             $table->foreignId('potongan_id')->nullable()->constrained('potongans')->onDelete('set null');
             $table->integer('gaji_pokok');
             $table->integer('tunjangan')->nullable();
+            $table->integer('potongan')->nullable();
+            $table->string('bulan');
+            $table->text('keterangan')->nullable();
             $table->integer('total_gaji');
             $table->timestamps();
-
         });
     }
 
