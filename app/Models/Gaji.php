@@ -14,9 +14,9 @@ class Gaji extends Model
         'gaji_pokok',
         'tunjangan',
         'potongan',
-        'total_gaji',
-        'bulan', // ubah dari 'tanggal'
+        'bulan',  // tambahkan
         'keterangan',
+        'total_gaji',
     ];
 
     protected $casts = [
