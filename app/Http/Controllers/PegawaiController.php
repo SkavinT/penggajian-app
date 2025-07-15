@@ -81,23 +81,31 @@ class PegawaiController extends Controller
     }
     public function exportCsv()
     {
-        $pegawais = Pegawai::all();
-        $csv  = "nip,nama,email,jabatan,gaji_pokok,alamat,telepon\n";
-        foreach ($pegawais as $p) {
-            $csv .= implode(',', [
-                $p->nip,
-                $p->nama,
-                $p->email,
-                $p->jabatan,
-                $p->gaji_pokok,
-                "\"{$p->alamat}\"",
-                $p->telepon,
-            ]) . "\n";
-        }
-        return response($csv, 200, [
+        $headers = [
             'Content-Type'        => 'text/csv',
-            'Content-Disposition' => 'attachment; filename=\"pegawai.csv\"',
-        ]);
+            'Content-Disposition' => 'attachment; filename="pegawai.csv"',
+        ];
+
+        $callback = function() {
+            $handle = fopen('php://output', 'w');
+            fputcsv($handle, ['nip','nama','email','jabatan','gaji_pokok','alamat','telepon']);
+            Pegawai::chunk(500, function($pegawais) use ($handle) {
+                foreach ($pegawais as $p) {
+                    fputcsv($handle, [
+                        $p->nip,
+                        $p->nama,
+                        $p->email,
+                        $p->jabatan,
+                        $p->gaji_pokok,
+                        $p->alamat,
+                        $p->telepon,
+                    ]);
+                }
+            });
+            fclose($handle);
+        };
+
+        return response()->stream($callback, 200, $headers);
     }
 
     public function importCsv(Request $request)

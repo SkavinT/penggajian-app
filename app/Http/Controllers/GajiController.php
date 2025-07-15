@@ -135,7 +135,6 @@ class GajiController extends Controller
     public function exportCsv()
     {
         $filename = 'data_gaji.csv';
-        $gajis = \App\Models\Gaji::with('pegawai')->get();
 
         $headers = [
             "Content-type"        => "text/csv",
@@ -145,21 +144,24 @@ class GajiController extends Controller
             "Expires"             => "0"
         ];
 
-        $callback = function() use ($gajis) {
+        $callback = function() {
             $handle = fopen('php://output', 'w');
             fputcsv($handle, ['No', 'Nama Pegawai', 'Gaji Pokok', 'Tunjangan', 'Potongan', 'Total Gaji', 'Tanggal', 'Keterangan']);
-            foreach ($gajis as $i => $gaji) {
-                fputcsv($handle, [
-                    $i+1,
-                    $gaji->pegawai->nama ?? '',
-                    $gaji->gaji_pokok,
-                    $gaji->tunjangan,
-                    $gaji->potongan,
-                    $gaji->total_gaji,
-                    $gaji->bulan->format('Y-m'),
-                    $gaji->keterangan
-                ]);
-            }
+            $i = 1;
+            \App\Models\Gaji::with('pegawai')->chunk(500, function($gajis) use (&$i, $handle) {
+                foreach ($gajis as $gaji) {
+                    fputcsv($handle, [
+                        $i++,
+                        $gaji->pegawai->nama ?? '',
+                        $gaji->gaji_pokok,
+                        $gaji->tunjangan,
+                        $gaji->potongan,
+                        $gaji->total_gaji,
+                        $gaji->bulan, // gunakan string langsung
+                        $gaji->keterangan
+                    ]);
+                }
+            });
             fclose($handle);
         };
 
