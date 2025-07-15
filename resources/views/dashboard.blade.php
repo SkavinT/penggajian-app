@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
+<div id="main-content" class="container-fluid" style="max-width: 1400px; padding: 24px 24px 24px 0;">
 <div class="row mb-4">
   <!-- Pegawai Baru Bulan Ini -->
   <div class="col-xl-3 col-md-6 mb-4">
@@ -289,4 +290,4 @@ if (data) {
 </script>
 @endpush
 
-<div id="main-content" class="container-fluid" style="max-width: 1800px; margin-left:100px; padding: 3px;">
+

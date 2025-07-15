@@ -88,8 +88,13 @@
         margin-left: 220px;
         transition: margin-left 0.3s;
     }
-    .sidebar-collapsed ~ #main-content {
-        margin-left: 0 !important;
+    .sidebar-open ~ #main-content {
+        margin-left: 220px;
+    }
+    @media (max-width: 991px) {
+        .sidebar-open ~ #main-content {
+            margin-left: 0;
+        }
     }
 </style>
 
@@ -207,6 +212,15 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
     });
+
+    // Inisialisasi sidebar tertutup di desktop & mobile
+    if(window.innerWidth > 991) {
+        sidebar.classList.add('sidebar-collapsed');
+        if(mainContent) mainContent.style.marginLeft = '0';
+    } else {
+        sidebar.classList.remove('sidebar-open');
+        if(mainContent) mainContent.style.marginLeft = '0';
+    }
 });
 </script>
 
