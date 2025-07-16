@@ -8,6 +8,7 @@ use App\Models\Tunjangan;
 use App\Models\PotonganKeterlambatan;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class GajiController extends Controller
 {
@@ -18,7 +19,7 @@ class GajiController extends Controller
         // Filter nama pegawai hanya untuk admin
         if (Auth::user()->role === 'a' && $request->filled('nama_pegawai')) {
             $nama = $request->nama_pegawai;
-            $query->whereHas('pegawai', function($q) use ($nama) {
+            $query->whereHas('pegawai', function ($q) use ($nama) {
                 $q->where('nama', 'like', '%' . $nama . '%');
             });
         }
@@ -26,7 +27,7 @@ class GajiController extends Controller
         // Untuk user biasa, selalu batasi ke namanya sendiri
         if (Auth::user()->role !== 'a') {
             $nama = Auth::user()->name;
-            $query->whereHas('pegawai', function($q) use ($nama) {
+            $query->whereHas('pegawai', function ($q) use ($nama) {
                 $q->whereRaw('LOWER(nama) = ?', [strtolower($nama)]);
             });
         }
@@ -73,8 +74,8 @@ class GajiController extends Controller
         ]);
 
         $total_gaji = ($request->gaji_pokok ?? 0)
-                    + ($request->tunjangan  ?? 0)
-                    - ($request->potongan   ?? 0);
+            + ($request->tunjangan  ?? 0)
+            - ($request->potongan   ?? 0);
 
         $data = $request->all();
         $data['total_gaji'] = $total_gaji;
@@ -82,7 +83,7 @@ class GajiController extends Controller
         Gaji::create($data);
 
         return redirect()->route('gaji.index')
-                         ->with('success','Data gaji berhasil ditambahkan.');
+            ->with('success', 'Data gaji berhasil ditambahkan.');
     }
 
     public function edit(Gaji $gaji)
@@ -132,40 +133,46 @@ class GajiController extends Controller
         return view('gaji.show', compact('gaji'));
     }
 
-    public function exportCsv()
+    public function exportExcel()
     {
-        $filename = 'data_gaji.csv';
+        $gajis = Gaji::with('pegawai')->get();
 
         $headers = [
-            "Content-type"        => "text/csv",
-            "Content-Disposition" => "attachment; filename=$filename",
+            "Content-Type"        => "application/vnd.ms-excel",
+            "Content-Disposition" => "attachment; filename=data_gaji.xls",
             "Pragma"              => "no-cache",
             "Cache-Control"       => "must-revalidate, post-check=0, pre-check=0",
             "Expires"             => "0"
         ];
 
-        $callback = function() {
-            $handle = fopen('php://output', 'w');
-            fputcsv($handle, ['No', 'Nama Pegawai', 'Gaji Pokok', 'Tunjangan', 'Potongan', 'Total Gaji', 'Tanggal', 'Keterangan']);
-            $i = 1;
-            \App\Models\Gaji::with('pegawai')->chunk(500, function($gajis) use (&$i, $handle) {
-                foreach ($gajis as $gaji) {
-                    fputcsv($handle, [
-                        $i++,
-                        $gaji->pegawai->nama ?? '',
-                        $gaji->gaji_pokok,
-                        $gaji->tunjangan,
-                        $gaji->potongan,
-                        $gaji->total_gaji,
-                        $gaji->bulan, // gunakan string langsung
-                        $gaji->keterangan
-                    ]);
-                }
-            });
-            fclose($handle);
-        };
+        $output = '<table border="1">';
+        $output .= '
+            <tr>
+                <th>No</th>
+                <th>Nama Pegawai</th>
+                <th>Gaji Pokok</th>
+                <th>Tunjangan</th>
+                <th>Potongan</th>
+                <th>Total Gaji</th>
+                <th>Bulan</th>
+                <th>Keterangan</th>
+            </tr>';
+        $i = 1;
+        foreach ($gajis as $gaji) {
+            $output .= '<tr>
+                <td>' . $i++ . '</td>
+                <td>' . ($gaji->pegawai->nama ?? '') . '</td>
+                <td>' . $gaji->gaji_pokok . '</td>
+                <td>' . $gaji->tunjangan . '</td>
+                <td>' . $gaji->potongan . '</td>
+                <td>' . $gaji->total_gaji . '</td>
+                <td>' . $gaji->bulan . '</td>
+                <td>' . $gaji->keterangan . '</td>
+            </tr>';
+        }
+        $output .= '</table>';
 
-        return response()->stream($callback, 200, $headers);
+        return response($output, 200, $headers);
     }
 
     public function importCsv(Request $request)
@@ -178,9 +185,16 @@ class GajiController extends Controller
         $handle = fopen($file->getRealPath(), 'r');
         $header = fgetcsv($handle); // skip header
 
+        Log::info('Mulai import gaji');
+
         while (($row = fgetcsv($handle)) !== false) {
-            // Contoh urutan kolom: No, Nama Pegawai, Gaji Pokok, Tunjangan, Potongan, Total Gaji, Tanggal, Keterangan
-            // Anda bisa sesuaikan index kolom sesuai file CSV Anda
+            Log::info('Baris CSV:', $row);
+
+            // Pastikan jumlah kolom cukup
+            if (count($row) < 7) {
+                continue;
+            }
+
             $pegawai = \App\Models\Pegawai::where('nama', $row[1])->first();
             if ($pegawai) {
                 \App\Models\Gaji::create([
@@ -189,12 +203,17 @@ class GajiController extends Controller
                     'tunjangan'  => $row[3],
                     'potongan'   => $row[4],
                     'total_gaji' => $row[5],
-                    'bulan'    => $row[6],
+                    'bulan'      => $row[6],
                     'keterangan' => $row[7] ?? null,
                 ]);
+                Log::info('Gaji berhasil diimport untuk pegawai: ' . $pegawai->nama);
+            } else {
+                Log::warning('Pegawai tidak ditemukan: ' . $row[1]);
             }
         }
         fclose($handle);
+
+        Log::info('Import gaji selesai');
 
         return redirect()->route('gaji.index')->with('success', 'Import CSV berhasil!');
     }

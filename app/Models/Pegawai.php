@@ -14,11 +14,11 @@ class Pegawai extends Model
     protected $fillable = [
         'nip',
         'nama',
+        'email',
         'jabatan',
         'gaji_pokok',
         'alamat',
-        'telepon',
-        'email',          // ← tambah
+        'telepon'
     ];
 
     public function potongans()

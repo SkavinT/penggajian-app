@@ -42,8 +42,8 @@
 
     <!-- Tombol Export dan Import CSV Modern -->
     <div class="d-flex justify-content-end align-items-center gap-2 mb-3">
-        <a href="{{ route('gaji.export.csv') }}" class="btn btn-success d-flex align-items-center">
-            <i class="bi bi-file-earmark-arrow-down me-1"></i> Export CSV
+        <a href="{{ route('gaji.export.xls') }}" class="btn btn-success d-flex align-items-center">
+            <i class="bi bi-file-earmark-arrow-down me-1"></i> Export Excel
         </a>
         @if(auth()->user() && auth()->user()->role === 'a')
         <form action="{{ route('gaji.import.csv') }}" method="POST" enctype="multipart/form-data" class="d-flex align-items-center gap-2">

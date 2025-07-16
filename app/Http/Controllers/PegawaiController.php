@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Pegawai;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth; // Import Auth facade
+use Illuminate\Support\Facades\Log; // Import Log facade
 
 use Illuminate\Routing\Controller;
 
@@ -79,33 +80,43 @@ class PegawaiController extends Controller
         $pegawai = Pegawai::findOrFail($id);
         return view('pegawai.show', compact('pegawai'));
     }
-    public function exportCsv()
+    public function exportXls()
     {
+        $pegawais = Pegawai::all();
+
         $headers = [
-            'Content-Type'        => 'text/csv',
-            'Content-Disposition' => 'attachment; filename="pegawai.csv"',
+            "Content-Type"        => "application/vnd.ms-excel",
+            "Content-Disposition" => "attachment; filename=pegawai.xls",
+            "Pragma"              => "no-cache",
+            "Cache-Control"       => "must-revalidate, post-check=0, pre-check=0",
+            "Expires"             => "0"
         ];
 
-        $callback = function() {
-            $handle = fopen('php://output', 'w');
-            fputcsv($handle, ['nip','nama','email','jabatan','gaji_pokok','alamat','telepon']);
-            Pegawai::chunk(500, function($pegawais) use ($handle) {
-                foreach ($pegawais as $p) {
-                    fputcsv($handle, [
-                        $p->nip,
-                        $p->nama,
-                        $p->email,
-                        $p->jabatan,
-                        $p->gaji_pokok,
-                        $p->alamat,
-                        $p->telepon,
-                    ]);
-                }
-            });
-            fclose($handle);
-        };
+        $output = '<table border="1">';
+        $output .= '
+            <tr>
+                <th>NIP</th>
+                <th>Nama</th>
+                <th>Email</th>
+                <th>Jabatan</th>
+                <th>Gaji Pokok</th>
+                <th>Alamat</th>
+                <th>Telepon</th>
+            </tr>';
+        foreach ($pegawais as $p) {
+            $output .= '<tr>
+                <td>' . $p->nip . '</td>
+                <td>' . $p->nama . '</td>
+                <td>' . $p->email . '</td>
+                <td>' . $p->jabatan . '</td>
+                <td>' . $p->gaji_pokok . '</td>
+                <td>' . $p->alamat . '</td>
+                <td>' . $p->telepon . '</td>
+            </tr>';
+        }
+        $output .= '</table>';
 
-        return response()->stream($callback, 200, $headers);
+        return response($output, 200, $headers);
     }
 
     public function importCsv(Request $request)
@@ -119,17 +130,18 @@ class PegawaiController extends Controller
             fgetcsv($handle, 1000, ',');
 
             while (($row = fgetcsv($handle, 1000, ',')) !== false) {
-                Pegawai::updateOrCreate(
-                    ['nip' => $row[0]],
-                    [
-                        'nama'       => $row[1],
-                        'email'      => $row[2],
-                        'jabatan'    => $row[3],
-                        'gaji_pokok' => $row[4],
-                        'alamat'     => $row[5],
-                        'telepon'    => $row[6],
-                    ]
-                );
+                if (count($row) < 7) {
+                    continue;
+                }
+                Pegawai::create([
+                    'nip'        => $row[0],
+                    'nama'       => $row[1],
+                    'email'      => $row[2],
+                    'jabatan'    => $row[3],
+                    'gaji_pokok' => $row[4],
+                    'alamat'     => $row[5],
+                    'telepon'    => $row[6],
+                ]);
             }
             fclose($handle);
         }

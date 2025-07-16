@@ -12,10 +12,10 @@
         Tambah Pegawai
       </a>
     @endif
-    <a href="{{ route('pegawai.export.csv') }}"
+    <a href="{{ route('pegawai.export.xls') }}"
        class="btn btn-success d-flex align-items-center">
       <i class="bi bi-file-earmark-arrow-down me-1"></i>
-      Export CSV
+      Export Excel
     </a>
     @if(auth()->user() && auth()->user()->role === 'a')
       <form action="{{ route('pegawai.import.csv') }}"
