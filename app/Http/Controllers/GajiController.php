@@ -54,36 +54,32 @@ class GajiController extends Controller
 
     public function store(Request $request)
     {
-        // format angka
-        $request->merge([
-            'gaji_pokok' => str_replace('.', '', $request->gaji_pokok),
-            'tunjangan'  => str_replace('.', '', $request->tunjangan),
-            'potongan'   => str_replace('.', '', $request->potongan),
-            // set tanggal hari ini
-            'tanggal'    => now()->format('Y-m-d'),
+        $data = $request->validate([
+            'pegawai_id' => 'required|exists:pegawais,id',
+            'gaji_pokok' => 'required',
+            'tunjangan_transport' => 'required',
+            'tunjangan_makan' => 'required',
+            'potongan_pinjaman' => 'required',
+            'potongan_keterlambatan' => 'required',
+            'tunjangan' => 'required',
+            'potongan' => 'required',
+            'bulan' => 'required',
+            'keterangan' => 'nullable',
+            'total_gaji' => 'required',
         ]);
 
-        $request->validate([
-            'pegawai_id' => 'required',
-            'gaji_pokok' => 'required|numeric',
-            'tunjangan'  => 'nullable|numeric',
-            'potongan'   => 'nullable|numeric',
-            'bulan'      => 'required|date_format:Y-m',
-            'keterangan' => 'nullable|string',
-            'tanggal'    => 'required|date',
-        ]);
-
-        $total_gaji = ($request->gaji_pokok ?? 0)
-            + ($request->tunjangan  ?? 0)
-            - ($request->potongan   ?? 0);
-
-        $data = $request->all();
-        $data['total_gaji'] = $total_gaji;
+        // Hilangkan titik ribuan
+        foreach ([
+            'gaji_pokok','tunjangan_transport','tunjangan_makan',
+            'potongan_pinjaman','potongan_keterlambatan',
+            'tunjangan','potongan','total_gaji'
+        ] as $field) {
+            $data[$field] = str_replace('.', '', $data[$field]);
+        }
 
         Gaji::create($data);
 
-        return redirect()->route('gaji.index')
-            ->with('success', 'Data gaji berhasil ditambahkan.');
+        return redirect()->route('gaji.index')->with('success', 'Data gaji berhasil ditambah');
     }
 
     public function edit(Gaji $gaji)
@@ -96,27 +92,21 @@ class GajiController extends Controller
 
     public function update(Request $request, Gaji $gaji)
     {
-        $request->merge([
-            'gaji_pokok' => str_replace('.', '', $request->gaji_pokok),
-            'tunjangan' => str_replace('.', '', $request->tunjangan),
-            'potongan' => str_replace('.', '', $request->potongan),
-        ]);
-
-        $request->validate([
+        $validated = $request->validate([
             'pegawai_id' => 'required',
             'gaji_pokok' => 'required|numeric',
-            'tunjangan' => 'nullable|numeric',
-            'potongan' => 'nullable|numeric',
+            'tunjangan_transport' => 'required|integer',
+            'tunjangan_makan' => 'required|integer',
+            'potongan_pinjaman' => 'required|integer',
+            'potongan_keterlambatan' => 'required|integer',
             'bulan' => 'required|date_format:Y-m',
             'keterangan' => 'nullable|string',
         ]);
 
-        $total_gaji = ($request->gaji_pokok ?? 0) + ($request->tunjangan ?? 0) - ($request->potongan ?? 0);
+        $validated['tunjangan'] = $validated['tunjangan_transport'] + $validated['tunjangan_makan'];
+        $validated['potongan'] = $validated['potongan_pinjaman'] + $validated['potongan_keterlambatan'];
 
-        $data = $request->all();
-        $data['total_gaji'] = $total_gaji;
-
-        $gaji->update($data);
+        $gaji->update($validated);
 
         return redirect()->route('gaji.index')->with('success', 'Data gaji berhasil diupdate.');
     }
@@ -173,48 +163,5 @@ class GajiController extends Controller
         $output .= '</table>';
 
         return response($output, 200, $headers);
-    }
-
-    public function importCsv(Request $request)
-    {
-        $request->validate([
-            'csv_file' => 'required|file|mimes:csv,txt',
-        ]);
-
-        $file = $request->file('csv_file');
-        $handle = fopen($file->getRealPath(), 'r');
-        $header = fgetcsv($handle); // skip header
-
-        Log::info('Mulai import gaji');
-
-        while (($row = fgetcsv($handle)) !== false) {
-            Log::info('Baris CSV:', $row);
-
-            // Pastikan jumlah kolom cukup
-            if (count($row) < 7) {
-                continue;
-            }
-
-            $pegawai = \App\Models\Pegawai::where('nama', $row[1])->first();
-            if ($pegawai) {
-                \App\Models\Gaji::create([
-                    'pegawai_id' => $pegawai->id,
-                    'gaji_pokok' => $row[2],
-                    'tunjangan'  => $row[3],
-                    'potongan'   => $row[4],
-                    'total_gaji' => $row[5],
-                    'bulan'      => $row[6],
-                    'keterangan' => $row[7] ?? null,
-                ]);
-                Log::info('Gaji berhasil diimport untuk pegawai: ' . $pegawai->nama);
-            } else {
-                Log::warning('Pegawai tidak ditemukan: ' . $row[1]);
-            }
-        }
-        fclose($handle);
-
-        Log::info('Import gaji selesai');
-
-        return redirect()->route('gaji.index')->with('success', 'Import CSV berhasil!');
     }
 }

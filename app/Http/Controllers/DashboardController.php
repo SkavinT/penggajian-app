@@ -6,6 +6,7 @@ use App\Models\Pegawai;
 use App\Models\Gaji;
 use Illuminate\Http\Request;
 use DateTime;
+use Illuminate\Support\Facades\Auth; // Tambahkan ini
 
 class DashboardController extends Controller
 {
@@ -23,14 +24,10 @@ class DashboardController extends Controller
 
         // 1) Ringkasan singkat
         $totalPegawai = Pegawai::count();
-        // dulu: pakai kolom `bulan` yang tidak ada
-        // $totalGajiBulanIni = Gaji::where('bulan', date('Y-m'))->sum('total_gaji');
-        // baru: filter berdasarkan created_at bulan & tahun sekarang
         $totalGajiBulanIni = Gaji::whereMonth('created_at', date('m'))
                                  ->whereYear('created_at', date('Y'))
                                  ->sum('total_gaji');
 
-        // Tambahkan total pengeluaran keseluruhan
         $totalPengeluaranSemua = Gaji::sum('total_gaji');
 
         $recentPegawais = Pegawai::whereMonth('created_at', date('m'))
@@ -60,20 +57,28 @@ class DashboardController extends Controller
         $labels       = $gajiValues = $pegawaiValues = [];
         for ($m = 1; $m <= 12; $m++) {
             $key = $year . '-' . str_pad($m,2,'0',STR_PAD_LEFT);
-            // untuk tampilan X axis: Jan, Feb, dst.
             $labels[]        = DateTime::createFromFormat('!m', $m)->format('M');
             $gajiValues[]    = $gajiPerBulan[$key]   ?? 0;
             $pegawaiValues[] = $pegawaiPerBulan[$key] ?? 0;
         }
 
+        // Perbaiki pengecekan role agar tidak error jika user belum login
+        $user = Auth::user();
+        if (!$user || $user->role !== 'a') {
+            $pegawaiValues = array_fill(0, 12, 0);
+        }
+
+        // Perbaiki orderByDesc pada relasi gajis, gunakan created_at jika bulan tidak ada
         $pegawaiGaji = Pegawai::with(['gajis' => function($q) {
-            $q->orderByDesc('bulan');
+            $q->orderByDesc('created_at');
         }])->get()->map(function($p) {
             return [
                 'nama' => $p->nama,
                 'total_gaji' => optional($p->gajis->first())->total_gaji ?? 0
             ];
         })->values();
+
+        $showPegawaiChart = $user && $user->role === 'a'; // true hanya untuk admin
 
         return view('dashboard', compact(
             'totalPegawai',
@@ -83,7 +88,8 @@ class DashboardController extends Controller
             'lastGajis',
             'labels',
             'gajiValues',
-            'pegawaiValues'
+            'pegawaiValues',
+            'showPegawaiChart' // <-- tambahkan ini
         ))->with('pegawaiGaji', $pegawaiGaji);
     }
 }

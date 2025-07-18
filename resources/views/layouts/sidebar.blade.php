@@ -138,6 +138,16 @@
     </li>
     @endif
 
+    <!-- Register Karyawan Link (khusus admin) -->
+    @if(auth()->user() && auth()->user()->role === 'a')
+    <li class="nav-item">
+        <a class="nav-link" href="{{ route('karyawan.register') }}">
+            <i class="fas fa-user-plus"></i>
+            Register Karyawan
+        </a>
+    </li>
+    @endif
+
     <hr class="sidebar-divider">
 
     <!-- Logout Link -->

@@ -17,27 +17,6 @@
       <i class="bi bi-file-earmark-arrow-down me-1"></i>
       Export Excel
     </a>
-    @if(auth()->user() && auth()->user()->role === 'a')
-      <form action="{{ route('pegawai.import.csv') }}"
-            method="POST"
-            enctype="multipart/form-data"
-            class="d-flex align-items-center gap-2 mb-0">
-        @csrf
-        <label for="import-pegawai-csv"
-               class="btn btn-outline-primary btn-sm mb-0 d-flex align-items-center"
-               style="cursor:pointer;">
-          <i class="bi bi-file-earmark-arrow-up me-1"></i>
-          Import CSV
-          <input id="import-pegawai-csv"
-                 type="file"
-                 name="file"
-                 accept=".csv"
-                 required
-                 class="d-none"
-                 onchange="this.form.submit()">
-        </label>
-      </form>
-    @endif
   </div>
 
   <div class="table-responsive">

@@ -45,6 +45,8 @@
         <a href="{{ route('gaji.export.xls') }}" class="btn btn-success d-flex align-items-center">
             <i class="bi bi-file-earmark-arrow-down me-1"></i> Export Excel
         </a>
+        {{-- Hapus form import CSV di bawah ini --}}
+        {{-- 
         @if(auth()->user() && auth()->user()->role === 'a')
         <form action="{{ route('gaji.import.csv') }}" method="POST" enctype="multipart/form-data" class="d-flex align-items-center gap-2">
             @csrf
@@ -54,6 +56,7 @@
             </label>
         </form>
         @endif
+        --}}
     </div>
 
     <!-- Tabel Menampilkan Data Gaji Responsive -->
@@ -64,11 +67,15 @@
                     <th>No</th>
                     <th>Pegawai</th>
                     <th>Gaji Pokok</th>
+                    <th>Tunjangan Transport</th>
+                    <th>Tunjangan Makan</th>
                     <th>Tunjangan</th>
+                    <th>Potongan Pinjaman</th>
+                    <th>Potongan Keterlambatan</th>
                     <th>Potongan</th>
                     <th>Bulan</th>
                     <th>Keterangan</th>
-                    <th>Total Gaji</th>   {{-- Tambahkan ini --}}
+                    <th>Total Gaji</th>
                     <th>Edit</th>
                 </tr>
             </thead>
@@ -78,11 +85,15 @@
                     <td>{{ $index + 1 }}</td>
                     <td>{{ $gaji->pegawai->nama }}</td>
                     <td>{{ number_format($gaji->gaji_pokok, 0, ',', '.') }}</td>
+                    <td>{{ number_format($gaji->tunjangan_transport ?? 0, 0, ',', '.') }}</td>
+                    <td>{{ number_format($gaji->tunjangan_makan ?? 0, 0, ',', '.') }}</td>
                     <td>{{ number_format($gaji->tunjangan ?? 0, 0, ',', '.') }}</td>
+                    <td>{{ number_format($gaji->potongan_pinjaman ?? 0, 0, ',', '.') }}</td>
+                    <td>{{ number_format($gaji->potongan_keterlambatan ?? 0, 0, ',', '.') }}</td>
                     <td>{{ number_format($gaji->potongan ?? 0, 0, ',', '.') }}</td>
                     <td>{{ substr($gaji->bulan, 0, 7) }}</td>
                     <td>{{ $gaji->keterangan ?? '-' }}</td>
-                    <td>{{ number_format($gaji->total_gaji, 0, ',', '.') }}</td> {{-- Tambahkan ini --}}
+                    <td>{{ number_format($gaji->total_gaji, 0, ',', '.') }}</td>
                     <td>
                         @can('update', $gaji)
                             <a href="{{ route('gaji.edit', $gaji->id) }}" class="btn btn-warning btn-sm">Edit</a>

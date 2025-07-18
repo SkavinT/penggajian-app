@@ -118,33 +118,4 @@ class PegawaiController extends Controller
 
         return response($output, 200, $headers);
     }
-
-    public function importCsv(Request $request)
-    {
-        $request->validate([
-            'file' => 'required|file|mimes:csv,txt',
-        ]);
-        $path = $request->file('file')->getRealPath();
-        if (($handle = fopen($path, 'r')) !== false) {
-            // skip header
-            fgetcsv($handle, 1000, ',');
-
-            while (($row = fgetcsv($handle, 1000, ',')) !== false) {
-                if (count($row) < 7) {
-                    continue;
-                }
-                Pegawai::create([
-                    'nip'        => $row[0],
-                    'nama'       => $row[1],
-                    'email'      => $row[2],
-                    'jabatan'    => $row[3],
-                    'gaji_pokok' => $row[4],
-                    'alamat'     => $row[5],
-                    'telepon'    => $row[6],
-                ]);
-            }
-            fclose($handle);
-        }
-        return back()->with('success','Data pegawai berhasil di‐import.');
-    }
 }

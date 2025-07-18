@@ -12,8 +12,12 @@ class Gaji extends Model
     protected $fillable = [
         'pegawai_id',
         'gaji_pokok',
-        'tunjangan',
+        'tunjangan_transport',
+        'tunjangan_makan',
+        'potongan_pinjaman',
+        'potongan_keterlambatan',
         'potongan',
+        'tunjangan',
         'bulan',  // tambahkan
         'keterangan',
         'total_gaji',

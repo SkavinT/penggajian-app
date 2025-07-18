@@ -44,6 +44,22 @@
       @error('tunjangan')<div class="invalid-feedback">{{ $message }}</div>@enderror
     </div>
 
+    <div class="form-group mb-3">
+      <label for="tunjangan_transport">Tunjangan Transport</label>
+      <input id="tunjangan_transport" name="tunjangan_transport" type="text"
+             class="form-control currency @error('tunjangan_transport') is-invalid @enderror"
+             value="{{ old('tunjangan_transport', number_format($gaji->tunjangan_transport ?? 0,0,'','')) }}" required>
+      @error('tunjangan_transport')<div class="invalid-feedback">{{ $message }}</div>@enderror
+    </div>
+
+    <div class="form-group mb-3">
+      <label for="tunjangan_makan">Tunjangan Makan</label>
+      <input id="tunjangan_makan" name="tunjangan_makan" type="text"
+             class="form-control currency @error('tunjangan_makan') is-invalid @enderror"
+             value="{{ old('tunjangan_makan', number_format($gaji->tunjangan_makan ?? 0,0,'','')) }}" required>
+      @error('tunjangan_makan')<div class="invalid-feedback">{{ $message }}</div>@enderror
+    </div>
+
     {{-- Potongan --}}
     <div class="form-group mb-3">
       <label for="potongan">Potongan</label>
@@ -51,6 +67,22 @@
              class="form-control currency @error('potongan') is-invalid @enderror"
              value="{{ old('potongan', number_format($gaji->potongan ?? 0,0,'','')) }}">
       @error('potongan')<div class="invalid-feedback">{{ $message }}</div>@enderror
+    </div>
+
+    <div class="form-group mb-3">
+      <label for="potongan_pinjaman">Potongan Pinjaman</label>
+      <input id="potongan_pinjaman" name="potongan_pinjaman" type="text"
+             class="form-control currency @error('potongan_pinjaman') is-invalid @enderror"
+             value="{{ old('potongan_pinjaman', number_format($gaji->potongan_pinjaman ?? 0,0,'','')) }}" required>
+      @error('potongan_pinjaman')<div class="invalid-feedback">{{ $message }}</div>@enderror
+    </div>
+
+    <div class="form-group mb-3">
+      <label for="potongan_keterlambatan">Potongan Keterlambatan</label>
+      <input id="potongan_keterlambatan" name="potongan_keterlambatan" type="text"
+             class="form-control currency @error('potongan_keterlambatan') is-invalid @enderror"
+             value="{{ old('potongan_keterlambatan', number_format($gaji->potongan_keterlambatan ?? 0,0,'','')) }}" required>
+      @error('potongan_keterlambatan')<div class="invalid-feedback">{{ $message }}</div>@enderror
     </div>
 
     {{-- Bulan --}}

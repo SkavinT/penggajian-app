@@ -85,7 +85,8 @@
         <h1>Selamat Datang di<br>Aplikasi Gaji</h1>
         <div class="btn-group">
             <a href="{{ route('login') }}" class="btn-login">Login</a>
-            <a href="{{ route('register') }}" class="btn-register">Register</a>
+            {{-- Hapus atau komentari baris ini --}}
+            {{-- <a href="{{ route('register') }}" class="btn btn-primary">Register</a> --}}
         </div>
     </div>
 </body>
