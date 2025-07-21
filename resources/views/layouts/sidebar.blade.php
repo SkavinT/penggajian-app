@@ -148,6 +148,13 @@
     </li>
     @endif
 
+    <!-- Ubah Password Link -->
+    <li class="nav-item">
+        <a class="nav-link" href="{{ route('password.edit') }}">
+            <i class="fas fa-key"></i> Ubah Password
+        </a>
+    </li>
+
     <hr class="sidebar-divider">
 
     <!-- Logout Link -->

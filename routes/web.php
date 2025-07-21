@@ -67,4 +67,7 @@ Route::middleware(['auth'])->group(function () {
 
 Route::post('/pegawai/import-csv', [PegawaiController::class, 'importCsv'])->name('pegawai.import.csv');
 
+Route::get('/password/edit', [App\Http\Controllers\PasswordController::class, 'edit'])->name('password.edit')->middleware('auth');
+Route::put('/password/update', [App\Http\Controllers\PasswordController::class, 'update'])->name('password.update')->middleware('auth');
+
 require __DIR__ . '/auth.php';
