@@ -31,6 +31,7 @@
     @foreach($gajis as $gaji)
     <div class="slip-container">
         <div class="header">
+            <img src="https://logowik.com/content/uploads/images/pertamina2579.jpg" alt="Logo Pertamina" style="height:60px; margin-bottom:10px;">
             <h2>Slip Gaji Pegawai</h2>
             <div>Bulan: <strong>{{ $gaji->bulan }}</strong></div>
         </div>
