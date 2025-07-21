@@ -12,11 +12,13 @@
         Tambah Pegawai
       </a>
     @endif
-    <a href="{{ route('pegawai.export.xls') }}"
-       class="btn btn-success d-flex align-items-center">
-      <i class="bi bi-file-earmark-arrow-down me-1"></i>
-      Export Excel
-    </a>
+    <form action="{{ route('pegawai.import.csv') }}" method="POST" enctype="multipart/form-data" class="d-inline">
+        @csrf
+        <label for="csvInput" class="btn btn-success mb-0">
+            <i class="bi bi-file-earmark-excel"></i> Import CSV
+        </label>
+        <input type="file" id="csvInput" name="file" accept=".csv" required style="display:none" onchange="this.form.submit()">
+    </form>
   </div>
 
   <div class="table-responsive">

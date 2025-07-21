@@ -42,8 +42,8 @@
 
     <!-- Tombol Export dan Import CSV Modern -->
     <div class="d-flex justify-content-end align-items-center gap-2 mb-3">
-        <a href="{{ route('gaji.export.xls') }}" class="btn btn-success d-flex align-items-center">
-            <i class="bi bi-file-earmark-arrow-down me-1"></i> Export Excel
+        <a href="{{ route('gaji.export.pdfslip') }}" class="btn btn-danger d-flex align-items-center">
+            <i class="bi bi-file-earmark-pdf me-1"></i> Export PDF Slip
         </a>
         {{-- Hapus form import CSV di bawah ini --}}
         {{-- 

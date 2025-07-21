@@ -122,46 +122,22 @@ class GajiController extends Controller
         $gaji = Gaji::findOrFail($id);
         return view('gaji.show', compact('gaji'));
     }
-
-    public function exportExcel()
+    public function exportPdfSlip()
     {
-        $gajis = Gaji::with('pegawai')->get();
+        $user = Auth::user();
 
-        $headers = [
-            "Content-Type"        => "application/vnd.ms-excel",
-            "Content-Disposition" => "attachment; filename=data_gaji.xls",
-            "Pragma"              => "no-cache",
-            "Cache-Control"       => "must-revalidate, post-check=0, pre-check=0",
-            "Expires"             => "0"
-        ];
-
-        $output = '<table border="1">';
-        $output .= '
-            <tr>
-                <th>No</th>
-                <th>Nama Pegawai</th>
-                <th>Gaji Pokok</th>
-                <th>Tunjangan</th>
-                <th>Potongan</th>
-                <th>Total Gaji</th>
-                <th>Bulan</th>
-                <th>Keterangan</th>
-            </tr>';
-        $i = 1;
-        foreach ($gajis as $gaji) {
-            $output .= '<tr>
-                <td>' . $i++ . '</td>
-                <td>' . ($gaji->pegawai->nama ?? '') . '</td>
-                <td>' . $gaji->gaji_pokok . '</td>
-                <td>' . $gaji->tunjangan . '</td>
-                <td>' . $gaji->potongan . '</td>
-                <td>' . $gaji->total_gaji . '</td>
-                <td>' . $gaji->bulan . '</td>
-                <td>' . $gaji->keterangan . '</td>
-            </tr>';
+        // Jika admin, tampilkan semua slip gaji
+        if ($user->role === 'a') {
+            $gajis = Gaji::with('pegawai')->get();
+        } else {
+            // Untuk karyawan, hanya tampilkan slip gaji miliknya
+            $gajis = Gaji::with('pegawai')
+                ->whereHas('pegawai', function ($q) use ($user) {
+                    $q->where('email', $user->email);
+                })
+                ->get();
         }
-        $output .= '</table>';
 
-        return response($output, 200, $headers);
+        return view('gaji.slip_pdf', compact('gajis'));
     }
 }
