@@ -105,13 +105,17 @@
         </table>
     </div>
 
-    {{ $gajis->withQueryString()->links() }}
+    {{-- {{ $gajis->withQueryString()->links() }} --}}
 
-    @if(request('nama'))
+    @if(request('nama_pegawai'))
       <div class="alert alert-info">
-        Menampilkan data gaji untuk: <b>{{ request('nama') }}</b>
+        Menampilkan data gaji untuk: <b>{{ request('nama_pegawai') }}</b>
       </div>
     @endif
 
 </div>
 @endsection
+
+<style>
+/* pindahkan atau buang styling pagination jika tidak dipakai */
+</style>

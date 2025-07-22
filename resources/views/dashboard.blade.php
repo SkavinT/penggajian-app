@@ -134,6 +134,7 @@
 
 
 <!-- Grafik Gaji Bulan Ini -->
+{{-- 
 <div class="row mb-4">
   @if(auth()->user() && auth()->user()->role === 'a')
     <!-- Grafik Gaji Bulan Ini (admin saja) -->
@@ -143,7 +144,9 @@
           <h6 class="m-0 font-weight-bold text-primary">Pengeluaran Gaji Per Bulan</h6>
         </div>
         <div class="card-body">
-          <canvas id="gajiChart"></canvas>
+          <div style="width:100%; max-width:600px; margin:auto;">
+              <canvas id="gajiChart" width="400" height="200"></canvas>
+          </div>
         </div>
       </div>
     </div>
@@ -156,12 +159,15 @@
           <h6 class="m-0 font-weight-bold text-success">Total Pegawai Per Bulan</h6>
         </div>
         <div class="card-body">
-          <canvas id="pegawaiChart"></canvas>
+          <div class="card-body" style="width:100%; max-width:600px; margin:auto;">
+            <canvas id="pegawaiChart" width="400" height="200"></canvas>
+          </div>
         </div>
       </div>
     </div>
   @endif
 </div>
+--}}
 
 <!-- List 5 Transaksi Terakhir -->
 <div class="row mb-4">
@@ -210,6 +216,7 @@
 @endsection
 
 @push('scripts')
+{{-- 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
   // Chart Pengeluaran Gaji
@@ -257,26 +264,8 @@
       }
     }
   });
-
-  const pegawaiGaji = @json($pegawaiGaji ?? []);
-  document.getElementById('cari-nama').addEventListener('input', function() {
-      const nama = this.value.trim().toLowerCase();
-      const hasil = document.getElementById('hasil-gaji');
-      if (nama.length < 2) {
-          hasil.classList.add('d-none');
-          hasil.innerHTML = '';
-          return;
-      }
-      const data = pegawaiGaji.find(p => p.nama.toLowerCase() === nama);
-      if (data) {
-          hasil.classList.remove('d-none');
-          hasil.innerHTML = `<b>${data.nama}</b><br>Total Gaji: <span class="text-success">Rp ${parseInt(data.total_gaji).toLocaleString('id-ID')}</span>`;
-      } else {
-          hasil.classList.remove('d-none');
-          hasil.innerHTML = 'Nama tidak ditemukan.';
-      }
-  });
 </script>
+--}}
 <script>
 const pegawaiGaji = @json($pegawaiGaji ?? []);
 const namaUser = "{{ auth()->user()->name }}".toLowerCase();

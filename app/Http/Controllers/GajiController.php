@@ -41,7 +41,8 @@ class GajiController extends Controller
             $query->whereRaw("LEFT(bulan,4) = ?", [$request->tahun]);
         }
 
-        $gajis = $query->paginate(10);
+        // Ambil semua data tanpa pagination
+        $gajis = $query->get();
 
         return view('gaji.index', compact('gajis'));
     }

@@ -35,15 +35,7 @@
       @error('gaji_pokok')<div class="invalid-feedback">{{ $message }}</div>@enderror
     </div>
 
-    {{-- Tunjangan --}}
-    <div class="form-group mb-3">
-      <label for="tunjangan">Tunjangan</label>
-      <input id="tunjangan" name="tunjangan" type="text"
-             class="form-control currency @error('tunjangan') is-invalid @enderror"
-             value="{{ old('tunjangan', number_format($gaji->tunjangan ?? 0,0,'','')) }}">
-      @error('tunjangan')<div class="invalid-feedback">{{ $message }}</div>@enderror
-    </div>
-
+    {{-- Tunjangan Transport --}}
     <div class="form-group mb-3">
       <label for="tunjangan_transport">Tunjangan Transport</label>
       <input id="tunjangan_transport" name="tunjangan_transport" type="text"
@@ -52,6 +44,7 @@
       @error('tunjangan_transport')<div class="invalid-feedback">{{ $message }}</div>@enderror
     </div>
 
+    {{-- Tunjangan Makan --}}
     <div class="form-group mb-3">
       <label for="tunjangan_makan">Tunjangan Makan</label>
       <input id="tunjangan_makan" name="tunjangan_makan" type="text"
@@ -60,15 +53,16 @@
       @error('tunjangan_makan')<div class="invalid-feedback">{{ $message }}</div>@enderror
     </div>
 
-    {{-- Potongan --}}
+    {{-- Tunjangan (otomatis, readonly) --}}
     <div class="form-group mb-3">
-      <label for="potongan">Potongan</label>
-      <input id="potongan" name="potongan" type="text"
-             class="form-control currency @error('potongan') is-invalid @enderror"
-             value="{{ old('potongan', number_format($gaji->potongan ?? 0,0,'','')) }}">
-      @error('potongan')<div class="invalid-feedback">{{ $message }}</div>@enderror
+      <label for="tunjangan">Tunjangan</label>
+      <input id="tunjangan" name="tunjangan" type="text"
+             class="form-control currency @error('tunjangan') is-invalid @enderror"
+             value="{{ old('tunjangan', number_format($gaji->tunjangan ?? 0,0,'','')) }}" readonly>
+      @error('tunjangan')<div class="invalid-feedback">{{ $message }}</div>@enderror
     </div>
 
+    {{-- Potongan Pinjaman --}}
     <div class="form-group mb-3">
       <label for="potongan_pinjaman">Potongan Pinjaman</label>
       <input id="potongan_pinjaman" name="potongan_pinjaman" type="text"
@@ -77,12 +71,22 @@
       @error('potongan_pinjaman')<div class="invalid-feedback">{{ $message }}</div>@enderror
     </div>
 
+    {{-- Potongan Keterlambatan --}}
     <div class="form-group mb-3">
       <label for="potongan_keterlambatan">Potongan Keterlambatan</label>
       <input id="potongan_keterlambatan" name="potongan_keterlambatan" type="text"
              class="form-control currency @error('potongan_keterlambatan') is-invalid @enderror"
              value="{{ old('potongan_keterlambatan', number_format($gaji->potongan_keterlambatan ?? 0,0,'','')) }}" required>
       @error('potongan_keterlambatan')<div class="invalid-feedback">{{ $message }}</div>@enderror
+    </div>
+
+    {{-- Potongan (otomatis, readonly) --}}
+    <div class="form-group mb-3">
+      <label for="potongan">Potongan</label>
+      <input id="potongan" name="potongan" type="text"
+             class="form-control currency @error('potongan') is-invalid @enderror"
+             value="{{ old('potongan', number_format($gaji->potongan ?? 0,0,'','')) }}" readonly>
+      @error('potongan')<div class="invalid-feedback">{{ $message }}</div>@enderror
     </div>
 
     {{-- Bulan --}}
@@ -113,22 +117,40 @@ document.addEventListener('DOMContentLoaded', () => {
   const formatCurrency = v => v.replace(/\D/g,'')
                                 .replace(/\B(?=(\d{3})+(?!\d))/g, '.');
 
-  document.querySelectorAll('.currency').forEach(input => {
-    // inisialisasi format tampilan
-    input.value = formatCurrency(input.value);
+  function getInt(val) {
+    return parseInt(val.replace(/\./g, '')) || 0;
+  }
 
+  function updateTunjangan() {
+    const transport = getInt(document.getElementById('tunjangan_transport').value);
+    const makan = getInt(document.getElementById('tunjangan_makan').value);
+    document.getElementById('tunjangan').value = formatCurrency((transport + makan).toString());
+  }
+
+  function updatePotongan() {
+    const pinjaman = getInt(document.getElementById('potongan_pinjaman').value);
+    const keterlambatan = getInt(document.getElementById('potongan_keterlambatan').value);
+    document.getElementById('potongan').value = formatCurrency((pinjaman + keterlambatan).toString());
+  }
+
+  document.querySelectorAll('.currency').forEach(input => {
+    input.value = formatCurrency(input.value);
     input.addEventListener('input', () => {
       input.value = formatCurrency(input.value);
+      updateTunjangan();
+      updatePotongan();
     });
   });
 
-  // auto-fill gaji_pokok saat pegawai dipilih
   document.getElementById('pegawai_id').addEventListener('change', function() {
     let gaji = this.selectedOptions[0].dataset.gaji || 0;
     document.getElementById('gaji_pokok').value = formatCurrency(gaji);
   });
 
-  // strip titik sebelum submit
+  // trigger update saat load
+  updateTunjangan();
+  updatePotongan();
+
   document.getElementById('gaji-form').addEventListener('submit', () => {
     document.querySelectorAll('.currency').forEach(input => {
       input.value = input.value.replace(/\./g,'');
