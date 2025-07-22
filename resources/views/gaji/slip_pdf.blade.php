@@ -28,8 +28,8 @@
             Cetak / Simpan PDF Semua Slip Gaji
         </button>
     </div>
-    @foreach($gajis as $gaji)
-    <div class="slip-container">
+    @foreach($gajis as $index => $gaji)
+    <div class="slip-container" @if($index < count($gajis) - 1) style="page-break-after: always;" @endif>
         <div class="header">
             <img src="https://logowik.com/content/uploads/images/pertamina2579.jpg" alt="Logo Pertamina" style="height:60px; margin-bottom:10px;">
             <h2>Slip Gaji Pegawai</h2>

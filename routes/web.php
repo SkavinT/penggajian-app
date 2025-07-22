@@ -70,4 +70,7 @@ Route::post('/pegawai/import-csv', [PegawaiController::class, 'importCsv'])->nam
 Route::get('/password/edit', [App\Http\Controllers\PasswordController::class, 'edit'])->name('password.edit')->middleware('auth');
 Route::put('/password/update', [App\Http\Controllers\PasswordController::class, 'update'])->name('password.update')->middleware('auth');
 
+// Route::get('/register', [UserController::class, 'showRegisterForm'])->name('register');
+// Route::post('/register', [UserController::class, 'register']);
+
 require __DIR__ . '/auth.php';

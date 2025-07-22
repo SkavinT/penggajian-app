@@ -85,9 +85,34 @@
         <h1>Selamat Datang di<br>Aplikasi Gaji</h1>
         <div class="btn-group">
             <a href="{{ route('login') }}" class="btn-login">Login</a>
-            {{-- Hapus atau komentari baris ini --}}
-            {{-- <a href="{{ route('register') }}" class="btn btn-primary">Register</a> --}}
         </div>
+        {{-- <hr style="margin: 32px 0;"> --}}
+        {{-- 
+        <h2 style="color:#e1251b; margin-bottom:18px;">Register Akun Baru</h2>
+        <form method="POST" action="{{ route('register') }}" style="max-width:400px; margin:0 auto; text-align:left;">
+            @csrf
+            <div class="mb-3" style="margin-bottom:16px;">
+                <label>Nama</label>
+                <input type="text" name="name" class="form-control" required style="width:100%;padding:8px;border-radius:8px;border:1px solid #ccc;">
+                @error('name') <small class="text-danger">{{ $message }}</small> @enderror
+            </div>
+            <div class="mb-3" style="margin-bottom:16px;">
+                <label>Email</label>
+                <input type="email" name="email" class="form-control" required style="width:100%;padding:8px;border-radius:8px;border:1px solid #ccc;">
+                @error('email') <small class="text-danger">{{ $message }}</small> @enderror
+            </div>
+            <div class="mb-3" style="margin-bottom:16px;">
+                <label>Password</label>
+                <input type="password" name="password" class="form-control" required style="width:100%;padding:8px;border-radius:8px;border:1px solid #ccc;">
+                @error('password') <small class="text-danger">{{ $message }}</small> @enderror
+            </div>
+            <div class="mb-3" style="margin-bottom:24px;">
+                <label>Konfirmasi Password</label>
+                <input type="password" name="password_confirmation" class="form-control" required style="width:100%;padding:8px;border-radius:8px;border:1px solid #ccc;">
+            </div>
+            <button type="submit" class="btn-register" style="width:100%;">Register</button>
+        </form>
+        --}}
     </div>
 </body>
 </html>
